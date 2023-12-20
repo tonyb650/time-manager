@@ -6,7 +6,7 @@ import SortTasks from '../../utils/SortTasks';
 
 function MoveToTop(props) {
   const { taskList, setTaskList}  = useContext(TaskListContext);
-  const { task, index, needsUpdate, setNeedsUpdate } = props;
+  const { task, index } = props;
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -48,7 +48,6 @@ function MoveToTop(props) {
       console.log("Patch successful");
       console.log("taskListCopy after .then")
       console.log(taskListCopy)
-      // setNeedsUpdate(!needsUpdate);
     })
     .catch(err => console.error(err));
 

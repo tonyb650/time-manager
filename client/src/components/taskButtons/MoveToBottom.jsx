@@ -7,7 +7,7 @@ import addMinutes from "../../utils/addMinutes";
 
 function MoveToBottom(props) {
   const { taskList, setTaskList } = useContext(TaskListContext);
-  const { task, index, needsUpdate, setNeedsUpdate } = props;
+  const { task, index } = props;
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -39,7 +39,6 @@ function MoveToBottom(props) {
         console.log("Patch successful");
         console.log("taskListCopy after .then")
         console.log(taskListCopy)
-        // setNeedsUpdate(!needsUpdate);
       })
       .catch(err => console.error(err));
     }
@@ -49,8 +48,6 @@ function MoveToBottom(props) {
     let currentLastTask = taskListCopy[taskListCopy.length - 1];
     const currentEndTime = addMinutes(new Date(currentLastTask.startTimeScheduled), currentLastTask.durationOfTask + currentLastTask.durationOfBreak);
     console.log("currentEndTime " + currentEndTime);
-    // // *Subtract the durationOfTask and durationOfBreak from priorEarliest and this becomes our new scheduledStartTime for the target task
-    // const newEarliest = new Date(priorEarliest-taskListCopy[index].durationOfTask*60*1000-taskListCopy[index].durationOfBreak*60*1000);
 
     targetTask.startTimeScheduled = currentEndTime.toISOString();
     taskListCopy[index] = targetTask;
@@ -64,7 +61,6 @@ function MoveToBottom(props) {
       console.log("Patch successful");
       console.log("taskListCopy after .then")
       console.log(taskListCopy)
-      //setNeedsUpdate(!needsUpdate);
     })
     .catch(err => console.error(err));
   }

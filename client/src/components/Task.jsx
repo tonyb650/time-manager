@@ -1,21 +1,17 @@
 import { Link } from "react-router-dom";
 import chevron1up from "../assets/img/chevron-up.svg";
 import chevron1down from "../assets/img/chevron-down.svg";
-// import chevron2down from "../assets/img/chevron-double-down.svg";
 import arrow from "../assets/img/arrow-return-right.svg";
 import MoveToTop from "./taskButtons/moveToTop";
 import MoveToBottom from "./taskButtons/MoveToBottom";
-
-// import { useContext } from "react";
-// import TaskListContext from "../context/TaskListContext";
+import addMinutes from "../utils/addMinutes";
 
 function Task(props) {
-  // const  {taskList, setTaskList}  = useContext(TaskListContext);
-  const { task, index, needsUpdate, setNeedsUpdate } = props;
+  const { task, index } = props;
 
   return (
     <>
-      <div className="container border rounded my-2">
+      <div className={"container border rounded my-2 "+(new Date(task.startTimeScheduled) < new Date() && addMinutes(new Date(task.startTimeScheduled), task.durationOfTask) > new Date() ? " border-success border-3" : "")}>
         <div className="row">
           <div className="col-12 col-xs-4 col-sm-3 col-lg-2">
             <div className="container">
@@ -25,7 +21,7 @@ function Task(props) {
                     <img className="bg-danger" src={arrow} /> Link
                   </div>
                 ) : null}
-                <div className="border col-3 col-sm-12 rounded px-2">
+                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
                   {new Date(task.startTimeScheduled).toLocaleTimeString(
                     "en-US",
                     {
@@ -33,13 +29,13 @@ function Task(props) {
                     }
                   )}
                 </div>
-                <div className="border col-3 col-sm-12 rounded px-2">
+                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
                   {task.durationOfTask.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })}
                   min
                 </div>
-                <div className="border col-3 col-sm-12 rounded px-2">
+                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
                   {new Date(
                     new Date(task.startTimeScheduled).getTime() +
                       task.durationOfTask * 60 * 1000
@@ -78,8 +74,6 @@ function Task(props) {
                   <MoveToTop
                     task={task}
                     index={index}
-                    needsUpdate={needsUpdate}
-                    setNeedsUpdate={setNeedsUpdate}
                   />
                 </div>
                 <div className="col-6 col-xs-6 col-sm-3 col-lg-12 d-grid">
@@ -96,8 +90,6 @@ function Task(props) {
                   <MoveToBottom
                     task={task}
                     index={index}
-                    needsUpdate={needsUpdate}
-                    setNeedsUpdate={setNeedsUpdate}
                   />
                 </div>
               </div>
@@ -105,11 +97,11 @@ function Task(props) {
           </div>
         </div>
       </div>
-      {task.durationOfBreak > 0 ? (
-        <div className="col border rounded px-3 text-success">
+      {task.durationOfBreak > 0 && (
+        <div className={"col border rounded px-3 text-success"+(addMinutes(new Date(task.startTimeScheduled), task.durationOfTask) < new Date() && addMinutes(new Date(task.startTimeScheduled), task.durationOfTask+task.durationOfBreak) > new Date() ? " border-success border-3" : "")}> 
           {task.durationOfBreak} minute Break
         </div>
-      ) : null}
+      )}
     </>
   );
 }

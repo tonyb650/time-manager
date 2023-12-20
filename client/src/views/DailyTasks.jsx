@@ -12,10 +12,8 @@ import SortTasks from "../utils/SortTasks";
 function DailyTasks(props) {
   // Initialize state
   const {taskList, setTaskList} = useContext(TaskListContext);
-  // const [taskList, setTaskList] = useState([]);
   const [currTime, setCurrTime] = useState();
   const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
-  const [needsUpdate, setNeedsUpdate] = useState(false);
 
   // ~*~*~ Load main content
   useEffect(() => {
@@ -36,10 +34,9 @@ function DailyTasks(props) {
       .catch((err) => console.log(err));
   }, [renderDate]);
 
-  // useEffect(() => {
-  //   console.log("resorting")
-  //   setTaskList(SortTasks(taskList))
-  // },[needsUpdate])
+  useEffect(() => {
+    console.log("re-render on new minute coming from *currTime*")
+  },[currTime])
 
   return (
     <div className="container">
@@ -52,8 +49,7 @@ function DailyTasks(props) {
             <Task
               task={task}
               index={index}
-              needsUpdate={needsUpdate}
-              setNeedsUpdate={setNeedsUpdate}
+              currTime={currTime}
             />
           </div>
         );
