@@ -65,9 +65,10 @@ function AddTask(props) {
         }
         break;
       default:
-        console.error("unexpected target name");
-        console.log(e.target.name);
-        break; 
+        throw new Error("unexpected target name"+e.target.name);
+        // console.error("unexpected target name");
+        // console.log(e.target.name);
+        // break; 
     }
   }
 
