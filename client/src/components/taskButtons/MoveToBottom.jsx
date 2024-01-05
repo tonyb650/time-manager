@@ -9,11 +9,12 @@ function MoveToBottom(props) {
   const { taskList, setTaskList } = useContext(TaskListContext);
   const { task, index } = props;
 
-  const handleClick = (e) => {
-    e.preventDefault();
+
+  const handleClick = () => {
     // TODO: I feel like there might be a better way than creating copies in these next 2 lines(?)
+
     let targetTask = { ...task };
-    let taskListCopy = [...taskList];
+    let taskListCopy = [...taskList]
 
     // *If the target task is the last or the only task, nothing will happen (return null)
     if (index == taskListCopy.length - 1) {
@@ -21,45 +22,40 @@ function MoveToBottom(props) {
       return null;
     }
 
-    // TODO: If new startTimeScheduled > midnight, then open model to confirm moving the task to the next day
+    // * The prior ending time for the prior final task becomes the startTime for the target task
+    const priorLastTask = taskListCopy[taskListCopy.length-1]
+    const priorEndTime = addMinutes(new Date(priorLastTask.startTime), priorLastTask.durationOfTask + priorLastTask.durationOfBreak);
+    // TODO: If newEarliest < midnight, then set to midnight and reschedule every task in the day.
+    targetTask.startTime = priorEndTime.toISOString();
+    const newEndTime = addMinutes(priorEndTime, targetTask.durationOfTask + targetTask.durationOfBreak)
+    
+    // * If the new end time for the task is after current time, then clear 'isComplete' and 'actualDuration'
+    // * otherwise, leave them untouched
+    if(newEndTime > new Date()){
+      // targetTask.isComplete = false;
+      targetTask.actualTotalDuration = null;
+    }
+    // * By moving to the bottom, we are 'unpinning' this task
+    targetTask.isPinnedStartTime = false;
 
-    // *Loop through all tasks that come AFTER the targetTask. (Tasks that come before will be untouched.)
-    for(let i=index+1; i<taskListCopy.length;i++){
-      // *Look for a child of the target task, and if found, set child's parentId to target task.parentId (which may be null)
-      if(taskListCopy[i].parentId == targetTask._id){
-        taskListCopy[i].parentId = targetTask.parentId;
-        taskListCopy[i].startTimeScheduled = targetTask.startTimeScheduled;
-      } else if(taskListCopy[i].startTimeScheduled != null && index != 0){
-      // *Move all the 'startTimeScheduled' for tasks that come after the targetTask up by duration of targetTask (plus break)
-        taskListCopy[i].startTimeScheduled = addMinutes(new Date(taskListCopy[i].startTimeScheduled),-(targetTask.durationOfBreak+targetTask.durationOfTask)).toISOString();
-      }
-          // * Now save updated targetTask to DB
-      axios.patch(`http://localhost:8000/api/tasks/${taskListCopy[i]._id}`, taskListCopy[i])
-      .then(res => {
-        console.log("Patch successful");
-        console.log("taskListCopy after .then")
-        console.log(taskListCopy)
+    // If new 'first' task is not already 'pinned' then set PinnedStartTime = true and save record to DB
+    if(!taskListCopy[1].isPinnedStartTime){
+      taskListCopy[1].isPinnedStartTime = true;
+      axios.patch(`http://localhost:8000/api/tasks/${taskListCopy[1]._id}`, taskListCopy[1])
+      .then(res => { 
+        console.log("Patched new earliest (now pinned)");
       })
       .catch(err => console.error(err));
     }
-    // *Set target parentId to null (since we are breaking any linkage it has)
-    targetTask.parentId = null;
-    // *Retrieve the next available start time after the existing final task of the day
-    let currentLastTask = taskListCopy[taskListCopy.length - 1];
-    const currentEndTime = addMinutes(new Date(currentLastTask.startTimeScheduled), currentLastTask.durationOfTask + currentLastTask.durationOfBreak);
-    console.log("currentEndTime " + currentEndTime);
 
-    targetTask.startTimeScheduled = currentEndTime.toISOString();
+    // * Update context
     taskListCopy[index] = targetTask;
-    console.log("***** HERE IT IS: ")
-    console.log(taskListCopy)
     setTaskList(SortTasks( taskListCopy ));
 
     // * Now save updated targetTask to DB
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
-    .then(res => {
-      console.log("Patch successful");
-      console.log("taskListCopy after .then")
+    .then(res => { 
+      console.log("Patched targetTask successful");
       console.log(taskListCopy)
     })
     .catch(err => console.error(err));
@@ -68,12 +64,10 @@ function MoveToBottom(props) {
   return (
     <button
       className="btn btn-sm btn-light my-1"
-      onClick={(e) => {
-        handleClick(e);
-      }}
+      onClick={handleClick}
       value={task._id}
     >
-      <img src={chevron2down} /> Btm*
+      <img src={chevron2down} /> Btm
     </button>
   );
 }

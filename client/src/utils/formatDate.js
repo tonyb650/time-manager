@@ -1,4 +1,4 @@
-// ~*~* toISODateSTring function:
+// ~*~* toISODateString function:
 // ~*~* takes a date object and converts to ISO format string
 // ~*~* such as "2023-12-01"
 export function toISODateString(localDateStr) {

@@ -11,10 +11,9 @@ function AddTask(props) {
     taskBody: '',
     durationOfTask: '',
     durationOfBreak: '',
-    startTimeScheduled: '',
-    startTimeActual: null,
-    parentId: '',
-    isComplete: false,
+    actualTotalDuration: '',
+    startTime: '',
+    isPinnedStartTime: false,
     taskDate: ''
   });
   const [ timePicker, setTimePicker]= useState("08:00"); // TODO: Possibly eliminate timePicker ?
@@ -65,10 +64,7 @@ function AddTask(props) {
         }
         break;
       default:
-        throw new Error("unexpected target name"+e.target.name);
-        // console.error("unexpected target name");
-        // console.log(e.target.name);
-        // break; 
+        throw new Error("unexpected target name: "+e.target.name);
     }
   }
 
@@ -93,11 +89,7 @@ function AddTask(props) {
     task.taskTitle = task.taskTitle.trim();
     task.taskBody = task.taskBody.trim();
     task.taskDate = selectedDateTime;
-    task.startTimeActual = null;
-    task.startTimeScheduled = null;
-    if (!task.parentId) {
-      task.parentId = null;
-    }
+    task.startTime = selectedDateTime;
     console.log("Task to be saved: ")
     console.log(task)
     axios.post('http://localhost:8000/api/tasks', task)
@@ -132,8 +124,12 @@ function AddTask(props) {
                   { errors.taskDate ? <p className='text-danger form-text'>{errors.taskDate.message}</p> : null }
               </div>
               <div className='form-floating mb-3'>
-                  <input type="time" className='form-control'  name="timePicker" id="timePicker" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}} disabled/>
+                  <input type="time" className='form-control'  name="timePicker" id="timePicker" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}}/>
                   <label htmlFor='timePicker' className='form-label'>Time:</label>
+              </div>
+              <div className='form-check form-switch mb-3'>
+                  <input type="checkbox" className='form-check-input'  name="isPinnedStartTime" id="isPinnedStartTime" checked={task.isPinnedStartTime} onChange={handleChange}/>
+                  <label htmlFor='isPinnedStartTime' className='form-check-label'>isPinnedStartTime:</label>
               </div>
               <div className='form-floating mb-3'>
                   <input type="number" className='form-control'  name="durationOfTask" id="durationOfTask" placeholder="durationOfTask" value={task.durationOfTask} onChange={handleChange} onBlur={handleBlur} />
@@ -144,14 +140,6 @@ function AddTask(props) {
                   <input type="number" className='form-control'  name="durationOfBreak" id="durationOfBreak" placeholder="durationOfBreak" value={task.durationOfBreak} onChange={handleChange} onBlur={handleBlur}/>
                   <label htmlFor='durationOfBreak' className='form-label'>Break (minutes):</label>
                   { errors.durationOfBreak ? <p className='text-danger form-text'>{errors.durationOfBreak.message}</p> : null }
-              </div>
-              <div className='form-floating mb-3'>
-                <input type="text" className='form-control'  name="parentId" id="parentId" placeholder="" value={task.parentId} onChange={handleChange} />
-                <label htmlFor='parentId' className='form-label'>parentId:</label>
-              </div>
-              <div className='form-check form-switch mb-3'>
-                  <input type="checkbox" className='form-check-input'  name="isComplete" id="isComplete" checked={task.isComplete} onChange={handleChange}/>
-                  <label htmlFor='isComplete' className='form-check-label'>isComplete:</label>
               </div>
               <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Add" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/">Cancel</Link>
             </form>
