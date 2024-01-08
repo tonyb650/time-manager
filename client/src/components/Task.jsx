@@ -3,12 +3,13 @@ import chevron1up from "../assets/img/chevron-up.svg";
 import chevron1down from "../assets/img/chevron-down.svg";
 import pushpin from "../assets/img/pin-angle-fill.svg";
 import editpencil from "../assets/img/pencil-fill.svg";
-import MoveToTop from "./taskButtons/moveToTop";
+import MoveToTop from "./taskButtons/MoveToTop";
 import MoveToBottom from "./taskButtons/MoveToBottom";
 import addMinutes from "../utils/addMinutes";
 import PauseResume from "./taskButtons/PauseResume";
 import DeleteButton from "./taskButtons/DeleteButton";
 import CompleteButton from "./taskButtons/CompleteButton";
+import TaskDuration from "./taskFields/TaskDuration";
 
 
 function Task(props) {
@@ -43,11 +44,8 @@ function Task(props) {
                     }
                   )}
                 </div>
-                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
-                  {task.durationOfTask.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
-                  min
+                <div className="col-3 col-sm-12 ">
+                    <TaskDuration task={task} index={index}/>
                 </div>
                 <div className="border col-3 col-sm-12 rounded px-2 form-text ">
                   {new Date(
