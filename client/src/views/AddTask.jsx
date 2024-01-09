@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
+import NavBar from '../components/NavBar';
 
 function AddTask(props) {
   const navigate = useNavigate();
@@ -104,49 +105,52 @@ function AddTask(props) {
     }
 
   return (
-    <div className="container">
-      <div className="card mt-3">
-        <div className="card-body">
-            <h3 className="text-info">New Task</h3>
-            <form onSubmit={handleSubmit}>
-              <div className='form-floating mb-3'>
-                <input type="text" className='form-control' name="taskTitle" id="taskTitle" placeholder='taskTitle:' value={task.taskTitle} onChange={handleChange} onBlur={handleBlur}/>
-                <label htmlFor='taskTitle' className='form-label'>Task Title:</label>
-                { errors.taskTitle && ( <p className='text-danger form-text'>{errors.taskTitle.message}</p> )}
-              </div>
-              <div className='form-floating mb-3'>
-                  <input type="text" className='form-control'  name="taskBody" id="taskBody" placeholder="taskBody" value={task.taskBody} onChange={handleChange}/>
-                  <label htmlFor='taskBody' className='form-label'>Details:</label>
-              </div>
-              <div className='form-floating mb-3'>
-                  <input type="date" className='form-control'  name="datePicker" id="datePicker" value={datePicker} onChange={(e) => {setDatePicker(String(e.target.value))}}/>
-                  <label htmlFor='datePicker' className='form-label'>Date:</label>
-                  { errors.taskDate ? <p className='text-danger form-text'>{errors.taskDate.message}</p> : null }
-              </div>
-              <div className='form-floating mb-3'>
-                  <input type="time" className='form-control'  name="timePicker" id="timePicker" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}}/>
-                  <label htmlFor='timePicker' className='form-label'>Time:</label>
-              </div>
-              <div className='form-check form-switch mb-3'>
-                  <input type="checkbox" className='form-check-input'  name="isPinnedStartTime" id="isPinnedStartTime" checked={task.isPinnedStartTime} onChange={handleChange}/>
-                  <label htmlFor='isPinnedStartTime' className='form-check-label'>isPinnedStartTime:</label>
-              </div>
-              <div className='form-floating mb-3'>
-                  <input type="number" className='form-control'  name="durationOfTask" id="durationOfTask" placeholder="durationOfTask" value={task.durationOfTask} onChange={handleChange} onBlur={handleBlur} />
-                  <label htmlFor='durationOfTask' className='form-label'>Duration (minutes):</label>
-                  { errors.durationOfTask ? <p className='text-danger form-text'>{errors.durationOfTask.message}</p> : null }
-              </div>
-              <div className='form-floating mb-3'>
-                  <input type="number" className='form-control'  name="durationOfBreak" id="durationOfBreak" placeholder="durationOfBreak" value={task.durationOfBreak} onChange={handleChange} onBlur={handleBlur}/>
-                  <label htmlFor='durationOfBreak' className='form-label'>Break (minutes):</label>
-                  { errors.durationOfBreak ? <p className='text-danger form-text'>{errors.durationOfBreak.message}</p> : null }
-              </div>
-              <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Add" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/">Cancel</Link>
-            </form>
-            <span className='' ></span>
+    <>
+      {/* <NavBar/> */}
+      <div className="container">
+        <div className="card mt-3">
+          <div className="card-body">
+              <h3 className="text-info">New Task</h3>
+              <form onSubmit={handleSubmit}>
+                <div className='form-floating mb-3'>
+                  <input type="text" className='form-control' name="taskTitle" id="taskTitle" placeholder='taskTitle:' value={task.taskTitle} onChange={handleChange} onBlur={handleBlur}/>
+                  <label htmlFor='taskTitle' className='form-label'>Task Title:</label>
+                  { errors.taskTitle && ( <p className='text-danger form-text'>{errors.taskTitle.message}</p> )}
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="text" className='form-control'  name="taskBody" id="taskBody" placeholder="taskBody" value={task.taskBody} onChange={handleChange}/>
+                    <label htmlFor='taskBody' className='form-label'>Details:</label>
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="date" className='form-control'  name="datePicker" id="datePicker" value={datePicker} onChange={(e) => {setDatePicker(String(e.target.value))}}/>
+                    <label htmlFor='datePicker' className='form-label'>Date:</label>
+                    { errors.taskDate ? <p className='text-danger form-text'>{errors.taskDate.message}</p> : null }
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="time" className='form-control'  name="timePicker" id="timePicker" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}}/>
+                    <label htmlFor='timePicker' className='form-label'>Time:</label>
+                </div>
+                <div className='form-check form-switch mb-3'>
+                    <input type="checkbox" className='form-check-input'  name="isPinnedStartTime" id="isPinnedStartTime" checked={task.isPinnedStartTime} onChange={handleChange}/>
+                    <label htmlFor='isPinnedStartTime' className='form-check-label'>isPinnedStartTime:</label>
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="number" className='form-control'  name="durationOfTask" id="durationOfTask" placeholder="durationOfTask" value={task.durationOfTask} onChange={handleChange} onBlur={handleBlur} />
+                    <label htmlFor='durationOfTask' className='form-label'>Duration (minutes):</label>
+                    { errors.durationOfTask ? <p className='text-danger form-text'>{errors.durationOfTask.message}</p> : null }
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="number" className='form-control'  name="durationOfBreak" id="durationOfBreak" placeholder="durationOfBreak" value={task.durationOfBreak} onChange={handleChange} onBlur={handleBlur}/>
+                    <label htmlFor='durationOfBreak' className='form-label'>Break (minutes):</label>
+                    { errors.durationOfBreak ? <p className='text-danger form-text'>{errors.durationOfBreak.message}</p> : null }
+                </div>
+                <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Add" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/">Cancel</Link>
+              </form>
+              <span className='' ></span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

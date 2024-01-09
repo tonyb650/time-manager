@@ -17,7 +17,7 @@ function DisplayClock(props) {
     }, 5000);
   }, []);
 
-  return <h1>{currTime}</h1>;
+  return <h2>{currTime}</h2>;
 }
 
 export default DisplayClock;

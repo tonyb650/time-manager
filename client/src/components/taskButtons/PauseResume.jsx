@@ -8,7 +8,7 @@ function PauseResume(props) {
     setIsPaused(!isPaused);
   }
 
-  // TODO: if this component is conditionally rendered in Task.jsx, we don't need the conditional render here on isActive
+  // TODO: if this component is conditionally rendered in Task.jsx, we don't need the conditional render here on isActiveTask
   return (
     <div className="col-6 col-xs-12 col-sm-12 col-md-12 d-grid ">
       { isActiveTask ?
@@ -17,9 +17,6 @@ function PauseResume(props) {
           <button className="btn  btn-success" onClick={handleClick}>Pause</button>
         :
         <button className="btn btn-secondary" disabled>Pause</button>}
-      {/* { isPaused ?
-        "Paused":
-        "Running"} */}
     </div>
   );
 }

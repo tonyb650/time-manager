@@ -7,11 +7,13 @@ function TaskDuration(props) {
   const { task, index } = props;
   const { taskList, setTaskList}  = useContext(TaskListContext);
   const [ duration, setDuration ] = useState(task.durationOfTask);
+  
   let targetTask = {...task}
   let taskListCopy = [...taskList]
 
   // TODO: I'm pretty sure there is a problem with using useEffect to re-render on props but it is working so I'll live with it for now
-  // Note: without this useEffect, value={duration} lags behind on each re-render of the page 
+  // Note: without this useEffect, value={duration} lags behind on each re-render of the page
+  // More reading: https://tkdodo.eu/blog/putting-props-to-use-state 
   useEffect(()=>{
     setDuration(task.durationOfTask + " min")
   },[task])

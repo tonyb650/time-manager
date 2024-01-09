@@ -9,6 +9,7 @@ import TaskListContext from "../context/TaskListContext";
 import SortTasks from "../utils/SortTasks";
 import CantinaBand3 from "../assets/sound/CantinaBand3.wav";
 import taskEndTime from "../utils/taskEndTime";
+import NavBar from "../components/NavBar";
 
 function DailyTasks(props) {
   // Initialize state
@@ -91,9 +92,9 @@ function DailyTasks(props) {
 
   return (
     <div className="container">
-      <DisplayClock currTime={currTime} setCurrTime={setCurrTime} />
-      <Link to="/tasks/add">Add Task</Link>
-      <DatePicker setRenderDate={setRenderDate} />
+      <NavBar currTime={currTime} setCurrTime={setCurrTime} setRenderDate={setRenderDate}/>
+
+
       {taskList.map((task, index) => {
         return (
           <div key={index}>
