@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import Task from "../components/Task";
-import DatePicker from "../components/DatePicker";
-import DisplayClock from "../components/DisplayClock";
+// import DatePicker from "../components/DatePicker";
+// import DisplayClock from "../components/DisplayClock";
 import addMinutes from "../utils/addMinutes";
 import TaskListContext from "../context/TaskListContext";
 import SortTasks from "../utils/SortTasks";
@@ -20,11 +20,12 @@ function DailyTasks(props) {
   
   // ~*~*~ Load main content
   useEffect(() => {
+    setIsPaused(false);                     // Unpause whenever we change date
     axios
       .get("http://localhost:8000/api/tasks")
       .then((res) => {
-        console.log("Loaded all tasks from DB: ");
-        console.log(res.data)
+        // console.log("Loaded all tasks from DB: ");
+        // console.log(res.data)
         // *~*~ Filter res.data (all tasks) down to only tasks with taskDate = renderDate
         // TODO: make sure that filter will work in all time zones
         let tasksForDay = res.data.filter(
@@ -32,7 +33,8 @@ function DailyTasks(props) {
             new Date(element.taskDate).toLocaleDateString().substring(0, 10) ==
             renderDate.toLocaleDateString().substring(0, 10)
         );
-        console.log(tasksForDay);
+        console.log("Filtered Tasks:")
+        console.table(tasksForDay);
         setTaskList(SortTasks(tasksForDay));
       })
       .catch((err) => console.log(err));
@@ -46,17 +48,17 @@ function DailyTasks(props) {
     for(let i=0; i< taskList.length; i++){
       // * Play sound at beginning of task
       if(new Date(taskList[i].startTime) < new Date() && new Date(taskList[i].startTime) > addMinutes(new Date(),-.5) ){
-        console.log("Time to start new task")
+        // console.log("Time to start new task")
         new Audio(CantinaBand3).play();
       }
       // * Play sound at end of task
       if(addMinutes(new Date(taskList[i].startTime),taskList[i].durationOfTask) < new Date() && addMinutes(new Date(taskList[i].startTime),taskList[i].durationOfTask) > addMinutes(new Date(),-.5) ){
-        console.log("Time to end task & start break")
+        // console.log("Time to end task & start break")
         new Audio(CantinaBand3).play();
       }
       // * Mark as completed (set actualTotalTime) at the end of 
       if(taskEndTime(taskList[i]) < new Date() && taskEndTime(taskList[i]) > addMinutes(new Date(),-.5) ){
-        console.log("Time to end task & end break")
+        // console.log("Time to end task & end break")
         let targetTask = {...taskList[i]}
         targetTask.actualTotalDuration = targetTask.durationOfTask+targetTask.durationOfBreak;
         // Do we need to save this to the DB? Maybe not, because it will be updated on the next screen refresh anyway ?
@@ -71,7 +73,6 @@ function DailyTasks(props) {
     // And then cascade updating of start time through remaining tasks
     // And re-render immediately ?
     if(isPaused){
-      // const activeTaskIndex = null;
       for(let i = 0; i < taskList.length; i++){
         const taskStartTimeObj = new Date(taskList[i].startTime)
         if(taskStartTimeObj < new Date() && addMinutes(taskStartTimeObj, taskList[i].durationOfTask) > new Date()){
@@ -93,8 +94,6 @@ function DailyTasks(props) {
   return (
     <div className="container">
       <NavBar currTime={currTime} setCurrTime={setCurrTime} setRenderDate={setRenderDate}/>
-
-
       {taskList.map((task, index) => {
         return (
           <div key={index}>

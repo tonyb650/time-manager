@@ -17,7 +17,7 @@ function AddTask(props) {
     isPinnedStartTime: false,
     taskDate: ''
   });
-  const [ timePicker, setTimePicker]= useState("08:00"); // TODO: Possibly eliminate timePicker ?
+  const [ timePicker, setTimePicker]= useState("08:00"); // Give timePicker a default of 8:00am
   const [ datePicker, setDatePicker]= useState(new Date().toISOString().substring(0,10)); // Need to fix this but I'll come back to it. It uses GMT instead of Pacific time...
   const [ errors, setErrors] = useState({}); // error properties look like this: { fieldName : { message : "fieldName does not meet validations"}}
 
@@ -25,8 +25,8 @@ function AddTask(props) {
   let formIsValid = false;
   formIsValid = errors.durationOfBreak=="" && errors.durationOfTask=="" && errors.taskTitle==""; // Empty string means that each field has been checked in "onBlur"
 
-  // handleChange for text, numbers and checkboxes on form.
-  // Note that datePicker (and timePicker) are handled within the form 'onChange'
+  // 'handleChange' handles text, numbers and checkboxes on form.
+  // Note that datePicker (and timePicker) are handled within the form 'onChange', not in 'handleChange'
   const handleChange = (e) => {
     if(e.target.type.toLowerCase()=="checkbox"){
       setTask({

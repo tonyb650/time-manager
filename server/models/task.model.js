@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 // actualTotalDuration is the duration (task+break) based on pause/resume AND isComplete controls
 // isPinnedStartTime == true means that the startTime will not be dynamic
 // isPinnedStartTime == false means that the startTime will be calculated based on the end time of the prev task
-// taskDate will be the date that the  task belongs to
+// taskDate will be the date that the  task belongs to. Note that this is separate from startTime because a day's tasklist could go past midnight
 // TODO: will taskDate be midnight local time or Zulu time ?
 const taskSchema = new mongoose.Schema({
     taskTitle: {

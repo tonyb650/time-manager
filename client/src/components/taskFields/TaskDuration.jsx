@@ -7,7 +7,7 @@ function TaskDuration(props) {
   const { task, index } = props;
   const { taskList, setTaskList}  = useContext(TaskListContext);
   const [ duration, setDuration ] = useState(task.durationOfTask);
-  
+
   let targetTask = {...task}
   let taskListCopy = [...taskList]
 
@@ -36,6 +36,11 @@ function TaskDuration(props) {
     // * Update context (taskList)
     targetTask.durationOfTask = displayDuration;
     taskListCopy[index] = targetTask;
+
+    //TODO: handle automatic unpausing
+    // sortTasks first
+    // call activeID utility function --> pass in sorted taskListCopy, get back taskID of newly active task (if any)
+    // if newly activeID != pausedID, then set pausedID to null 
     setTaskList(SortTasks( taskListCopy ));
     // * Now save updated targetTask to DB
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)

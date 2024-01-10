@@ -13,8 +13,6 @@ function App() {
           <Route index element={<DailyTasks/>} />
           <Route path="tasks/add" element={<AddTask/>} />
           <Route path="/tasks/edit/:id" element={<EditTask/>} />
-          {/* <Route path="/task/add" element={<AddTask/>} />
-          <Route path="/task/view" element={<ViewTask/>} /> */}
         </Routes>
       </BrowserRouter>
     </TaskListProvider>
