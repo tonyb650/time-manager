@@ -4,6 +4,8 @@ import axios from "axios";
 import TaskListContext from "../../context/TaskListContext";
 import SortTasks from "../../utils/SortTasks";
 import addMinutes from "../../utils/addMinutes";
+import taskEndTime from "../../utils/taskEndTime";
+import { toTimeString } from "../../utils/formatDate";
 
 function MoveToBottom(props) {
   const { taskList, setTaskList } = useContext(TaskListContext);
@@ -23,16 +25,14 @@ function MoveToBottom(props) {
     }
 
     // * The prior ending time for the prior final task becomes the startTime for the target task
-    const priorLastTask = taskListCopy[taskListCopy.length-1]
-    const priorEndTime = addMinutes(new Date(priorLastTask.startTime), priorLastTask.durationOfTask + priorLastTask.durationOfBreak);
+    // const priorLastTask = taskListCopy[taskListCopy.length-1]
+    const priorEndTime = taskEndTime(taskListCopy[taskListCopy.length-1])//addMinutes(new Date(priorLastTask.startTime), priorLastTask.durationOfTask + priorLastTask.durationOfBreak);
     // TODO: If newEarliest < midnight, then set to midnight and reschedule every task in the day.
-    targetTask.startTime = priorEndTime.toISOString();
+    targetTask.startTime = toTimeString(priorEndTime); // not right...
     const newEndTime = addMinutes(priorEndTime, targetTask.durationOfTask + targetTask.durationOfBreak)
     
-    // * If the new end time for the task is after current time, then clear 'isComplete' and 'actualDuration'
-    // * otherwise, leave them untouched
+    // * If the new end time for the task is after current time, then null out 'actualDuration'
     if(newEndTime > new Date()){
-      // targetTask.isComplete = false;
       targetTask.actualTotalDuration = null;
     }
     // * By moving to the bottom, we are 'unpinning' this task
@@ -43,27 +43,27 @@ function MoveToBottom(props) {
       taskListCopy[1].isPinnedStartTime = true;
       axios.patch(`http://localhost:8000/api/tasks/${taskListCopy[1]._id}`, taskListCopy[1])
       .then(res => { 
-        console.log("Patched new earliest (now pinned)");
+        // console.log("Patched new earliest (now pinned)");
       })
       .catch(err => console.error(err));
     }
 
-    // * Update context
+    // * Update taskList (in context)
     taskListCopy[index] = targetTask;
     setTaskList(SortTasks( taskListCopy ));
 
     // * Now save updated targetTask to DB
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
     .then(res => { 
-      console.log("Patched targetTask successful");
-      console.log(taskListCopy)
+      // console.log("Patched targetTask successful");
+      // console.log(taskListCopy)
     })
     .catch(err => console.error(err));
   }
 
   return (
     <button
-      className="btn btn-sm btn-light my-1"
+      className="btn btn-sm btn-light mb-1"
       onClick={handleClick}
       value={task._id}
     >

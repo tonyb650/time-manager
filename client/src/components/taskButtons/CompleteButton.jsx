@@ -3,6 +3,7 @@ import TaskListContext from "../../context/TaskListContext";
 import minutesDiff from "../../utils/minutesDiff";
 import SortTasks from "../../utils/SortTasks";
 import axios from "axios";
+import { toDateObject } from "../../utils/formatDate";
 
 function CompleteButton(props) {
   const { task, index, setIsPaused } = props;
@@ -14,10 +15,11 @@ function CompleteButton(props) {
     let taskListCopy = [...taskList]
 
     // * Calculate number of minutes elapsed
-    let elapsedMinutes = minutesDiff(new Date(targetTask.startTime ), new Date());
+    let elapsedMinutes = minutesDiff(toDateObject(targetTask.taskDate,targetTask.startTime), new Date());
 
     // * Set actualTotalDuration for task ()
     targetTask.actualTotalDuration = elapsedMinutes;
+    
     // * Handle situation where elapsedMinutes is fewer than durationOfBreak
     if (elapsedMinutes < targetTask.durationOfBreak) {
       targetTask.durationOfBreak = elapsedMinutes;
@@ -39,7 +41,7 @@ function CompleteButton(props) {
   };
 
   return (
-    <div className="col-6 col-xs-12 col-sm-12 col-md-12 d-grid ">
+    <div className="col-6 col-xs-12 col-sm-12 col-md-12 d-grid my-1">
       <button className="btn btn-success" onClick={handleComplete}>Complete Now</button>
     </div>
   );

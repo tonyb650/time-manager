@@ -1,3 +1,26 @@
+import chevron1up from "../../assets/img/chevron-up.svg";
+
+function MoveUp(props) {
+  const { task, index } = props;
+
+  function handleClick(){
+    console.log("clicked")
+  }
+
+  return (
+    <button
+      className="btn btn-sm btn-light mb-1"
+      onClick={handleClick}
+      value={task._id}
+    >
+    <img src={chevron1up} /> Up
+  </button>
+  )
+}
+
+export default MoveUp
+
+/*
 import React, { useContext } from 'react'
 import chevron2up from "../../assets/img/chevron-double-up.svg";
 import axios from 'axios';
@@ -62,7 +85,7 @@ function MoveToTop(props) {
 
   return (
     <button
-      className="btn btn-sm btn-light mb-1"
+      className="btn btn-sm btn-light my-1"
       onClick={handleClick}
       value={task._id}
     >
@@ -72,3 +95,5 @@ function MoveToTop(props) {
 }
 
 export default MoveToTop;
+
+*/

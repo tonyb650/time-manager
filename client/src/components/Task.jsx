@@ -1,57 +1,46 @@
 import { Link } from "react-router-dom";
-import chevron1up from "../assets/img/chevron-up.svg";
-import chevron1down from "../assets/img/chevron-down.svg";
+
 import pushpin from "../assets/img/pin-angle-fill.svg";
 import editpencil from "../assets/img/pencil-fill.svg";
-import MoveToTop from "./taskButtons/MoveToTop";
-import MoveToBottom from "./taskButtons/MoveToBottom";
+
+import { toDateObject } from "../utils/formatDate";
 import addMinutes from "../utils/addMinutes";
+
 import PauseResume from "./taskButtons/PauseResume";
 import DeleteButton from "./taskButtons/DeleteButton";
 import CompleteButton from "./taskButtons/CompleteButton";
 import TaskDuration from "./taskFields/TaskDuration";
-
+import MoveToTop from "./taskButtons/MoveToTop";
+import MoveUp from "./taskButtons/MoveUp";
+import MoveDown from "./taskButtons/MoveDown";
+import MoveToBottom from "./taskButtons/MoveToBottom";
+import StartTime from "./taskFields/StartTime";
+import EndTime from "./taskFields/EndTime";
 
 function Task(props) {
   const { task, index, isPaused, setIsPaused } = props;
 
+  // * Determine 'isActiveTask' for rendering/styling purposes
+  const isActiveTask = toDateObject(task.taskDate,task.startTime) < new Date() && addMinutes(toDateObject(task.taskDate,task.startTime), task.durationOfTask) > new Date();
 
-  // * 'isActiveTask' returns true for rendering purposes
-  const isActiveTask = new Date(task.startTime) < new Date() && addMinutes(new Date(task.startTime), task.durationOfTask) > new Date();
-
-  // *'isActiveBreak' returns true for rendering purposes
-  const isActiveBreak = addMinutes(new Date(task.startTime), task.durationOfTask) < new Date() && addMinutes(new Date(task.startTime), task.durationOfTask+task.durationOfBreak) > new Date();
+  // * Determine 'isActiveBreak' for rendering/styling purposes
+  const isActiveBreak = addMinutes(toDateObject(task.taskDate,task.startTime), task.durationOfTask) < new Date() && addMinutes(toDateObject(task.taskDate,task.startTime), task.durationOfTask+task.durationOfBreak) > new Date();
   
-
-
   return (
     <>
-      <div className={"container border rounded my-2 "+( isActiveTask ? isPaused ? "border-warning border-3":" border-success border-3" : "")}>
+      <div className={"container border rounded my-2 pt-1 "+( isActiveTask ? isPaused ? "border-warning border-3":"border-success border-3" : "")}>
         <div className="row">
-          <div className="col-12 col-xs-4 col-sm-3 col-lg-2">
+          <div className="col-12 col-xs-4 col-sm-4 col-lg-2">
             <div className="container">
-              <div className="row py-1 gap-1">
-                {task.isPinnedStartTime ? (
-                  <div className="col-1 col-sm-12 text-danger">
-                    <img className="" src={pushpin} /> 
-                  </div>
-                ) : null}
-                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
-                  {new Date(task.startTime).toLocaleTimeString(
-                    "en-US",
-                    {
-                      timeStyle: "short",
-                    }
-                  )}
+              <div className="row py-1 gap-0 row-gap-1">
+                <div className="col-4 col-sm-12">
+                  <StartTime task={task} index={index}/>
                 </div>
-                <div className="col-3 col-sm-12 ">
+                <div className="col-4 col-sm-12 ">
                     <TaskDuration task={task} index={index}/>
                 </div>
-                <div className="border col-3 col-sm-12 rounded px-2 form-text ">
-                  {new Date(
-                    new Date(task.startTime).getTime() +
-                      task.durationOfTask * 60 * 1000
-                  ).toLocaleTimeString("en-US", { timeStyle: "short" })}
+                <div className="col-4 col-sm-12 ">
+                  <EndTime task={task}/>
                 </div>
               </div>
             </div>
@@ -60,8 +49,11 @@ function Task(props) {
             <div className="row">
               <div className="col d-flex justify-content-between">
                 <h3 >
+                {task.isPinnedStartTime ? (
+                  <span><img src={pushpin} />  </span>
+                ) : null}
                   <Link className="text-white text-decoration-none" to={`/task/edit/${task._id}`}>
-                    {task.taskTitle} {/* {task.taskDate.substring(0, 10)} */}
+                    {task.taskTitle}
                   </Link>
                 </h3>
                 <span>
@@ -70,6 +62,7 @@ function Task(props) {
                   </Link>
                   <DeleteButton taskId = {task._id}/>
                 </span>
+
               </div>
             </div>
             
@@ -78,7 +71,7 @@ function Task(props) {
             <div className="form-text text-black-50">Index:{index}</div>
             <div className="form-text text-black-50">TotalDuration:{task.actualTotalDuration}</div>
           </div>
-          <div className="col-12 col-xs-12 col-sm-4 col-lg-2">
+          <div className="col-12 col-xs-12 col-sm-3 col-lg-2">
             <div className="container">
               <div className="row">
                 { isActiveTask ?
@@ -111,14 +104,16 @@ function Task(props) {
                   />
                 </div>
                 <div className="col-6 col-xs-6 col-sm-3 col-lg-12 d-grid">
-                  <button type="button" className="btn btn-sm btn-light ">
-                    <img src={chevron1up} /> Up
-                  </button>
+                  <MoveUp
+                    task={task}
+                    index={index}
+                  />
                 </div>
                 <div className="col-6 col-xs-6 col-sm-3 col-lg-12  d-grid">
-                  <button className="btn btn-sm btn-light mt-1">
-                    <img src={chevron1down} /> Down
-                  </button>
+                  <MoveDown
+                    task={task}
+                    index={index}
+                  />
                 </div>
                 <div className="col-6 col-xs-6 col-sm-3 col-lg-12 d-grid">
                   <MoveToBottom

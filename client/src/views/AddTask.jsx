@@ -72,6 +72,7 @@ function AddTask(props) {
   // *HANDLE FORM SUBMISSION HERE*
   const handleSubmit = (e) => {
     // HOW WE HANDLE FORM SUBMISSION:
+    // TODO: THESE COMMENTS ARE OLD AND INACCURATE
     // 1) Combine datePicker & timePicker to create a single Date Object 'selectedDateTime
     // 2) Set 'taskDate' to that value
     // TODO: eliminate timePicker(?) & confirm that datePicker is providing the correct value such that this will work in all time zones
@@ -79,25 +80,13 @@ function AddTask(props) {
     // 4) Attempt to save in DB -> .then() return to dashboard -> .catch() process validation errors from backend
 
     e.preventDefault();
-    // console.log(datePicker);
-    // console.log(timePicker);
-    const dateParts = datePicker.split("-");     // split() datePicker format = "2012-10-12"
-    const timeParts = timePicker.split(":");     // split() timePicker format = "12:30"
-    // console.log(dateParts)
-    // console.log(timeParts)
-    const selectedDateTime = new Date(dateParts[0], dateParts[1]-1, dateParts[2], timeParts[0], timeParts[1]);
-    // console.log(selectedDateTime)
     task.taskTitle = task.taskTitle.trim();
     task.taskBody = task.taskBody.trim();
-    task.taskDate = selectedDateTime;
-    task.startTime = selectedDateTime;
-    console.log("Task to be saved: ")
-    console.log(task)
+    task.taskDate = datePicker;
+    task.startTime = timePicker;
     axios.post('http://localhost:8000/api/tasks', task)
       .then(res => { 
-        console.log("Successfully saved.")
-        console.log(res);
-        navigate('/')
+        navigate('/');
       })
       .catch(err => {
         setErrors(err.response.data.errors);

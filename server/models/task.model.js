@@ -25,9 +25,10 @@ const taskSchema = new mongoose.Schema({
     },
     actualTotalDuration: {type: Number,
     }, 
-    startTime: {type: Date
+    startTime: {type: String,
+      required: [true, "Start time is required"]
     },
-    taskDate: {type: Date,
+    taskDate: {type: String,
         required: [true, "Task date is required"]
     },
     isPinnedStartTime: {type: Boolean
