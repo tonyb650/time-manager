@@ -67,9 +67,7 @@ function Task(props) {
             </div>
             
             <div className="form-text">{task.taskBody}</div>
-            <div className="form-text text-black-50">ID: {task._id}</div>
-            <div className="form-text text-black-50">Index:{index}</div>
-            <div className="form-text text-black-50">TotalDuration:{task.actualTotalDuration}</div>
+            <div className="form-text text-black-50">Idx:{index} | TotalDuration:{task.actualTotalDuration}</div>
           </div>
           <div className="col-12 col-xs-12 col-sm-3 col-lg-2">
             <div className="container">

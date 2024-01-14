@@ -7,7 +7,7 @@ import SortTasks from "../utils/SortTasks";
 import CantinaBand3 from "../assets/sound/CantinaBand3.wav";
 import taskEndTime from "../utils/taskEndTime";
 import NavBar from "../components/NavBar";
-import { toDateObject, toISODateString, toLocalDateString } from "../utils/formatDate";
+import { toDateObject, toISODateString } from "../utils/formatDate";
 
 function DailyTasks(props) {
   /* Initialize state */
@@ -20,11 +20,12 @@ function DailyTasks(props) {
   useEffect(() => {
     setIsPaused(false);                                     // Unpause whenever we change date
     axios
-      .get("http://localhost:8000/api/tasks")
+      .get("http://localhost:8000/api/tasks", { withCredentials : true })
       .then((res) => {
         /*Filter res.data (all tasks) down to only tasks with taskDate == renderDate */
         // TODO: make sure that filter will work in all time zones
-        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate));
+        const userId = sessionStorage.getItem('userId')
+        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate) && element.userId == userId);
         // console.log("Filtered Tasks:")
         // console.table(tasksForDay);
         setTaskList(SortTasks(tasksForDay));

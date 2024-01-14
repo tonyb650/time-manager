@@ -3,19 +3,20 @@ import DailyTasks from './views/DailyTasks';
 import AddTask from './views/AddTask';
 import EditTask from './views/EditTask';
 import TaskListProvider from './context/TaskListProvider';
-
+import LoginPage from "./views/LoginPage";
 
 function App() {
   return (
-    <TaskListProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<DailyTasks/>} />
-          <Route path="tasks/add" element={<AddTask/>} />
-          <Route path="/tasks/edit/:id" element={<EditTask/>} />
-        </Routes>
-      </BrowserRouter>
-    </TaskListProvider>
+      <TaskListProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<LoginPage/>} />
+            <Route path="tasks" element={<DailyTasks/>} />
+            <Route path="tasks/add" element={<AddTask/>} />
+            <Route path="/tasks/edit/:id" element={<EditTask/>} />
+          </Routes>
+        </BrowserRouter>
+      </TaskListProvider>
   )
 }
 

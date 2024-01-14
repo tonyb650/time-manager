@@ -5,6 +5,7 @@ import NavBar from '../components/NavBar';
 
 function AddTask(props) {
   const navigate = useNavigate();
+  const userId = sessionStorage.getItem('userId')
 
   // useState destructuring
   const [ task, setTask ] = useState({
@@ -15,7 +16,8 @@ function AddTask(props) {
     actualTotalDuration: '',
     startTime: '',
     isPinnedStartTime: false,
-    taskDate: ''
+    taskDate: '',
+    userId: userId
   });
   const [ timePicker, setTimePicker]= useState("08:00"); // Give timePicker a default of 8:00am
   const [ datePicker, setDatePicker]= useState(new Date().toISOString().substring(0,10)); // Need to fix this but I'll come back to it. It uses GMT instead of Pacific time...
@@ -82,11 +84,12 @@ function AddTask(props) {
     e.preventDefault();
     task.taskTitle = task.taskTitle.trim();
     task.taskBody = task.taskBody.trim();
+    // ARE THESE NEXT TWO LINES STILL NECESSARY?
     task.taskDate = datePicker;
     task.startTime = timePicker;
     axios.post('http://localhost:8000/api/tasks', task)
       .then(res => { 
-        navigate('/');
+        navigate('/tasks');
       })
       .catch(err => {
         setErrors(err.response.data.errors);

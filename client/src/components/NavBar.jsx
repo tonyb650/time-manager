@@ -1,12 +1,25 @@
-import React from "react";
+// import React, { useContext } from "react";
 import DisplayClock from "./DisplayClock";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import alarm from "../assets/img/alarm.svg"
 import DatePicker from "./DatePicker";
 import plus from "../assets/img/plus-square.svg"
+import axios from "axios";
 
 function NavBar(props) {
   const { currTime, setCurrTime, setRenderDate } = props;
+  const navigate = useNavigate();
+
+  const logoutUser = () => {
+    console.log("entered logout user")
+    axios.post('http://localhost:8000/api/logout',{},{withCredentials:true})
+    .then(res => {
+      console.log("successfully logged out");
+      sessionStorage.removeItem('userId');
+      navigate("/");
+    })
+    .catch(err => console.log("error logging out"+err))
+}
 
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
@@ -41,7 +54,7 @@ function NavBar(props) {
             <Link className="nav-link" aria-current="page">Settings</Link>
             </li>
             <li className="nav-item">
-            <Link className="nav-link" aria-current="page">Logout</Link>
+              <button onClick={logoutUser} className="nav-link btn-link" aria-current="page">Logout</button>
             </li>
           </ul>
         </div>

@@ -19,7 +19,6 @@ function StartTime(props) {
 
   function handleChange(e){
     setStartTime(e.target.value);
-    console.log("handleChange");
   }
 
   function handleSubmit(e) {        // TODO: this handler may not be necessary for the time field. remove?
