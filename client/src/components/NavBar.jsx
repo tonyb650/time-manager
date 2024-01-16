@@ -1,4 +1,3 @@
-// import React, { useContext } from "react";
 import DisplayClock from "./DisplayClock";
 import { Link, useNavigate } from "react-router-dom";
 import alarm from "../assets/img/alarm.svg"

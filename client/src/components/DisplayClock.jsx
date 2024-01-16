@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 function DisplayClock(props) {
   const { currTime, setCurrTime } = props;
 
-  // *~*~ HERE WE SET UP OUR RUNNING DISPLAY CLOCK
+  // *HERE WE SET UP OUR RUNNING DISPLAY CLOCK*
   useEffect(() => {
     // Start clock immediately, up first render
     const time = new Date().toLocaleTimeString("en-US", { timeStyle: "short" });

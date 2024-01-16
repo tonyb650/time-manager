@@ -1,15 +1,13 @@
 const jwt = require('jsonwebtoken');
-const secret = "Its a mad mad mad mad world";
-module.exports.secret = secret;
+const secret = process.env.SECRET_KEY;
+
+// TODO: the following line seems unnecessary ? I'm not sure where I got it from...  Maybe it's supposed to be required by controller?
+// module.exports.secret = secret;
+
 module.exports.authenticate = (req, res, next) => {
   jwt.verify(req.cookies.userToken, secret, (err, payload) => {
-    console.log("**************************************************")
-    console.log('verifying')
-    // console.log(req)
-    // console.log(req.cookies)
-    console.log(req.cookies.userToken)
     if (err) {
-      console.log("NOT VERIFIED")
+      console.log("Authenticate failed within jwt.config.js")
       res.status(401).json({verified: false});
     } else {
       next();
@@ -17,5 +15,3 @@ module.exports.authenticate = (req, res, next) => {
   });
 }
 
-// const secret = process.env.FIRST_SECRET_KEY;
-// TODO: does the above make sense?

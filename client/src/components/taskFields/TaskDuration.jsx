@@ -8,60 +8,48 @@ function TaskDuration(props) {
   const { taskList, setTaskList}  = useContext(TaskListContext);
   const [ duration, setDuration ] = useState(task.durationOfTask);
 
-
-
-  // TODO: I'm pretty sure there is a problem with using useEffect to re-render on props but it is working so I'll live with it for now
+  // TODO: I'm questioning if there is a problem with using useEffect to re-render on props but it is working so I'll live with it for now
   // Note: without this useEffect, value={duration} lags behind on each re-render of the page
   // More reading: https://tkdodo.eu/blog/putting-props-to-use-state 
   useEffect(()=>{
     setDuration(task.durationOfTask + " min")
   },[task, taskList])
 
-  // Handle change/keystrokes
+  // *Handle change/keystrokes*
   const handleChange = (e) => {
     setDuration(e.target.value);
   };
 
-   // This handles an 'enter' keypress. It would be nice to have enter act like 'tab' instead of submit...
+   // *This handles an 'enter' keypress. It would be nice to have enter act like 'tab' instead of submit...*
   const handleSubmit = (e) => {  
     e.preventDefault();
     handleBlur();
   }
   
-  // This handles 'tab' or clicking off the input field
+  // *This handles 'tab' or clicking off the input field*
   const handleBlur = () => {
-    let targetTask = {...task}
+    let targetTask = {...task}                          // Make working copies of task and taskList
     let taskListCopy = [...taskList]
 
-    // format new value for user's viewing
     let displayDuration = parseInt(duration.trim());
-    if (displayDuration == NaN ){
-      setDuration("0 min");
-    } else {
-      setDuration(displayDuration+" min");
+    if (isNaN(displayDuration)){                        // Check if there is no valid numeric value
+      displayDuration = 1;                              // If so, set duration to 1 minute
     }
+    setDuration(displayDuration+" min");                // Add " min" to the numeric value
+    targetTask.durationOfTask = displayDuration;        // update durationOfTask on copy
+    taskListCopy[index] = targetTask;                   // update taskList copy with updated task
 
-    // update durationOfTask on copy
-    targetTask.durationOfTask = displayDuration;
-
-    // update taskList copy with updated task
-    taskListCopy[index] = targetTask;
-
-    //TODO: handle automatic unpausing
-    // sortTasks first
+    //TODO: possible way to handle automatic unpausing ( might be desirable if shortening duration of current & paused task makes end of task time earlier than current time)
     // call activeID utility function --> pass in sorted taskListCopy, get back taskID of newly active task (if any)
     // if newly activeID != pausedID, then set pausedID to null 
-    
-    // sort taskList and then update context taskList
-    setTaskList(SortTasks( taskListCopy ));
 
-    // * Now save updated targetTask to DB
+    setTaskList(SortTasks( taskListCopy ));             // sort taskList and then update context taskList
+
+    // * Now save updated targetTask to DB *
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
     .then(res => {})
     .catch(err => console.error(err));
   };
-
-
 
   return (
     <form onSubmit={handleSubmit}>

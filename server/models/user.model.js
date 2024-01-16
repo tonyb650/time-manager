@@ -25,9 +25,9 @@ const UserSchema = new mongoose.Schema({
     }
   }, {timestamps: true});
   
-  // add this after UserSchema is defined
+
 UserSchema.virtual('confirmPassword')
-.get( () => this._confirmPassword ) // 'this' here refers to the entire file
+.get( () => this._confirmPassword ) 
 .set( value => this._confirmPassword = value );
 
 UserSchema.pre('validate', function(next) {
@@ -37,8 +37,6 @@ UserSchema.pre('validate', function(next) {
     next();
   });
   
-
-// this should go after 
 UserSchema.pre('save', function(next) {
   bcrypt.hash(this.password, 10) // bcrypt.hash returns a promise. 10 salt 'rounds'
     .then(hash => {

@@ -10,8 +10,8 @@ function StartTime(props) {
   const { taskList, setTaskList}  = useContext(TaskListContext);
   const [startTime, setStartTime] = useState(task.startTime);
 
-  // TODO: I'm pretty sure there is a problem with using useEffect to re-render on props but it is working so I'll live with it for now
-  // Note: without this useEffect, the form value lags behind on each re-render of the page
+  // TODO: I'm questioning if there is a problem with using useEffect to re-render on props but it is working so I'll live with it for now
+  // Note: without this useEffect, value={duration} lags behind on each re-render of the page
   // More reading: https://tkdodo.eu/blog/putting-props-to-use-state 
   useEffect(()=>{
     setStartTime(task.startTime);
@@ -21,21 +21,19 @@ function StartTime(props) {
     setStartTime(e.target.value);
   }
 
-  function handleSubmit(e) {        // TODO: this handler may not be necessary for the time field. remove?
+  function handleSubmit(e) {        // TODO: this handler may not be necessary for the time field. Double-check that and remove
     e.preventDefault();
     console.log("handleSubmit")
     handleBlur();
   }
 
   function handleBlur(){
-    let targetTask = {...task};
+    let targetTask = {...task};                         // Make working copies of task and taskList
     let taskListCopy = [...taskList];
-
-    // Update startTime and isPinnedStartTime on copy
-    targetTask.startTime = startTime;
+    targetTask.startTime = startTime;                   // Update startTime and isPinnedStartTime on copy
     targetTask.isPinnedStartTime = true;
 
-    // If the task directly following the edited task is active and not pinned, we will pin it so that its time doesn't change
+    // *If the task directly following the edited task is active and not pinned, we will pin it so that its time doesn't change*
     if (index + 1 < taskListCopy.length){
       const nextTask = taskListCopy[index+1]
       if (!nextTask.isPinnedStartTime){
@@ -43,28 +41,22 @@ function StartTime(props) {
         const isActiveBreak = addMinutes(toDateObject(nextTask.taskDate,nextTask.startTime), nextTask.durationOfTask) < new Date() && addMinutes(toDateObject(nextTask.taskDate,nextTask.startTime), nextTask.durationOfTask+nextTask.durationOfBreak) > new Date();
         if (isActiveTask || isActiveBreak){
           nextTask.isPinnedStartTime = true;
-          // * Now save updated targetTask to DB
+          // *Now save updated targetTask to DB*
           axios.patch(`http://localhost:8000/api/tasks/${nextTask._id}`, nextTask)
           .then(res => {})
           .catch(err => console.error(err));
         }
       }
     }
+    taskListCopy[index] = targetTask;                   // update taskList copy with updated task
 
-    // update taskList copy with updated task
-    taskListCopy[index] = targetTask;
+    //TODO: possibly handle automatic unpausing, see notes in TaskDuration.jsx about this
 
-    //TODO: handle automatic unpausing
-    // see notes in TaskDuration.jsx about this
-
-    // sort taskList and then update context taskList
-    setTaskList(SortTasks( taskListCopy ));
-
-    // * Now save updated targetTask to DB
+    setTaskList(SortTasks( taskListCopy ));             // sort taskList and then update context taskList
+    // *Now save updated targetTask to DB*
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
     .then(res => {})
     .catch(err => console.error(err));
-
   }
 
   return (

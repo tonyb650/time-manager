@@ -11,9 +11,6 @@ function Login() {
       e.preventDefault();
       axios.post("http://localhost:8000/api/login", { email, password}, { withCredentials : true }) 
       .then((res) => {
-        // console.log('successful Login! here is res:');
-        // console.log(res);
-        // console.log(res.data._id)
         sessionStorage.setItem('userId', res.data.user._id)
         navigate('/tasks');
       } )

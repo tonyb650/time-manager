@@ -15,47 +15,38 @@ function MoveToTop(props) {
     let targetTask = {...task}
     let taskListCopy = [...taskList]
 
-    // *If the target task is the first or the only task, nothing will happen (return null)
-    if(index==0){
+    if(index==0){                                                                             // If the target task is the first or the only task, nothing will happen (return null)
         console.log("this is already the first task");
         return null;
     }
 
-    // *Retrieve the start time for the task at index=0
-    const priorEarliest = toDateObject(taskListCopy[0].taskDate, taskListCopy[0].startTime);
-    // const priorEarliest = new Date(taskListCopy[0].startTime).getTime();
-    // *Subtract the durationOfTask and durationOfBreak from priorEarliest and this becomes our new startTime for the target task
-    // const newEarliest = new Date(priorEarliest.get-taskListCopy[index].durationOfTask*60*1000-taskListCopy[index].durationOfBreak*60*1000);
+    const priorEarliest = toDateObject(taskListCopy[0].taskDate, taskListCopy[0].startTime);  // Retrieve the start time for the task[0]
+    // Subtract the durationOfTask and durationOfBreak from priorEarliest and this becomes our new startTime for the target task
     const newEarliest = addMinutes(priorEarliest,-(taskListCopy[index].durationOfTask+taskListCopy[index].durationOfBreak));
     // TODO: If newEarliest < midnight, then set to midnight and reschedule every task in the day.
     targetTask.startTime = toTimeString(newEarliest);
-    // * Set isPinned to true (since this will be the new first task, it must be pinned)
-    targetTask.isPinnedStartTime = true;
-    // * If 'end time' (which is equal to 'priorEarliest') < current time THEN set isComplete to true AND set actualDuration to duration+break
-    if (priorEarliest < new Date()){
-      // targetTask.isComplete = true;
+    targetTask.isPinnedStartTime = true;                                                      // Set isPinned to true (since this will be the new first task, it must be pinned)
+    if (priorEarliest < new Date()){                                                          // If 'end time' (which is equal to 'priorEarliest') < current time THEN set isComplete to true AND set actualDuration to duration+break
       targetTask.actualTotalDuration = targetTask.durationOfTask + targetTask.durationOfBreak; 
     } else {
-      targetTask.actualTotalDuration = null; // Maybe this is not necessary ?? This would mean that a task later in the day already had an actual time from a time that hasn't passed yet. Impossible situation, I think.
+      targetTask.actualTotalDuration = null;                                                  // Maybe this is not necessary ?? This would mean that a task later in the day already had an actual time from a time that hasn't passed yet. Impossible situation, I think.
     }
 
-    // * Save old first task to DB as unPinned
+    // *Save old first task to DB as unPinned*
     taskListCopy[0].isPinnedStartTime = false;
     axios.patch(`http://localhost:8000/api/tasks/${taskListCopy[0]._id}`, taskListCopy[0])
     .then(res => { 
-      // console.log("Patched old earliest (remove pinned)");
+      // console.log("Patched old earliest (remove pinned) in MoveToTop.jsx");
     })
     .catch(err => console.error(err));
 
-    // * Update context
-    taskListCopy[index] = targetTask;
-    setTaskList(SortTasks( taskListCopy ));
+    taskListCopy[index] = targetTask;                                                         // Update taskList with modified task
+    setTaskList(SortTasks( taskListCopy ));                                                   // Sort taskList and update context
 
-    // * Now save updated targetTask to DB
+    // * Now save updated targetTask to DB*
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
     .then(res => { 
-      // console.log("Patched targetTask successful");
-      // console.log(taskListCopy)
+      // console.log("Patched targetTask successful in MoveToTop.jsx");
     })
     .catch(err => console.error(err));
   }

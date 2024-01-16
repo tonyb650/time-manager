@@ -2,33 +2,35 @@ import React, { useState } from 'react'
 import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import NavBar from '../components/NavBar';
+import { toISODateString } from '../utils/formatDate';
 
 function AddTask(props) {
   const navigate = useNavigate();
+
+  // TODO: handle if sessionStorage-> userId is not present or not valid
   const userId = sessionStorage.getItem('userId')
 
-  // useState destructuring
+  // Set up blank task object with useState destructuring
+  const initialTaskDate = toISODateString(new Date());
+  const initialStartTime = "08:00"
   const [ task, setTask ] = useState({
     taskTitle: '',
     taskBody: '',
     durationOfTask: '',
     durationOfBreak: '',
     actualTotalDuration: '',
-    startTime: '',
+    startTime: initialStartTime,
     isPinnedStartTime: false,
-    taskDate: '',
+    taskDate: initialTaskDate,
     userId: userId
   });
-  const [ timePicker, setTimePicker]= useState("08:00"); // Give timePicker a default of 8:00am
-  const [ datePicker, setDatePicker]= useState(new Date().toISOString().substring(0,10)); // Need to fix this but I'll come back to it. It uses GMT instead of Pacific time...
+  // Set up state to hold validation errors
   const [ errors, setErrors] = useState({}); // error properties look like this: { fieldName : { message : "fieldName does not meet validations"}}
 
-  // 'formIsValid' controls enable/disable of form Submit button
-  let formIsValid = false;
+  let formIsValid = false;                                                                       // 'formIsValid' controls enable/disable of form Submit button
   formIsValid = errors.durationOfBreak=="" && errors.durationOfTask=="" && errors.taskTitle==""; // Empty string means that each field has been checked in "onBlur"
 
-  // 'handleChange' handles text, numbers and checkboxes on form.
-  // Note that datePicker (and timePicker) are handled within the form 'onChange', not in 'handleChange'
+  // *Handle changes on form fields here*
   const handleChange = (e) => {
     if(e.target.type.toLowerCase()=="checkbox"){
       setTask({
@@ -36,15 +38,17 @@ function AddTask(props) {
         [e.target.name] : e.target.checked
       })
     } else {
-    setTask({
-      ...task,
-      [e.target.name] : e.target.value
-    })
-  }}
+      console.log("setTask")
+      setTask({
+        ...task,
+        [e.target.name] : e.target.value
+      })
+    }
+  }
 
   // *Handle client-side validations here*
   // 'onBlur' means when a user clicks off of a form field.
-  // At that point, we check if the e.target.value is valid
+  // At that point, we check if the e.target.value passes validations
   const handleBlur = (e) => {
     switch (e.target.name){
       case 'taskTitle':
@@ -62,7 +66,7 @@ function AddTask(props) {
         }
         break;
       case 'durationOfBreak':
-        if(!e.target.value==""){ // this is here to clear any back-end error when 0 or other number is entered
+        if(!e.target.value==""){                    // this is here to clear any back-end error when 0 or other number is entered
           setErrors({...errors,  durationOfBreak : "" });
         }
         break;
@@ -71,23 +75,13 @@ function AddTask(props) {
     }
   }
 
-  // *HANDLE FORM SUBMISSION HERE*
+  // *Handle form submission here*
   const handleSubmit = (e) => {
-    // HOW WE HANDLE FORM SUBMISSION:
-    // TODO: THESE COMMENTS ARE OLD AND INACCURATE
-    // 1) Combine datePicker & timePicker to create a single Date Object 'selectedDateTime
-    // 2) Set 'taskDate' to that value
-    // TODO: eliminate timePicker(?) & confirm that datePicker is providing the correct value such that this will work in all time zones
-    // 3) Take care of non-form values: 'startTimeActual' & 'startTimeScheduled' (set to null)
-    // 4) Attempt to save in DB -> .then() return to dashboard -> .catch() process validation errors from backend
-
     e.preventDefault();
-    task.taskTitle = task.taskTitle.trim();
-    task.taskBody = task.taskBody.trim();
-    // ARE THESE NEXT TWO LINES STILL NECESSARY?
-    task.taskDate = datePicker;
-    task.startTime = timePicker;
-    axios.post('http://localhost:8000/api/tasks', task)
+    task.taskTitle = task.taskTitle.trim();         // remove any leading or trailing whitespace
+    task.taskBody = task.taskBody.trim();           // remove any leading or trailing whitespace
+
+    axios.post('http://localhost:8000/api/tasks', task, { withCredentials : true })
       .then(res => { 
         navigate('/tasks');
       })
@@ -114,13 +108,13 @@ function AddTask(props) {
                     <label htmlFor='taskBody' className='form-label'>Details:</label>
                 </div>
                 <div className='form-floating mb-3'>
-                    <input type="date" className='form-control'  name="datePicker" id="datePicker" value={datePicker} onChange={(e) => {setDatePicker(String(e.target.value))}}/>
-                    <label htmlFor='datePicker' className='form-label'>Date:</label>
+                    <input type="date" className='form-control'  name="taskDate" id="taskDate" value={task.taskDate} onChange={handleChange}/>
+                    <label htmlFor='taskDate' className='form-label'>Date:</label>
                     { errors.taskDate ? <p className='text-danger form-text'>{errors.taskDate.message}</p> : null }
                 </div>
                 <div className='form-floating mb-3'>
-                    <input type="time" className='form-control'  name="timePicker" id="timePicker" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}}/>
-                    <label htmlFor='timePicker' className='form-label'>Time:</label>
+                    <input type="time" className='form-control'  name="startTime" id="startTime" value={task.startTime} onChange={handleChange}/>
+                    <label htmlFor='startTime' className='form-label'>Time:</label>
                 </div>
                 <div className='form-check form-switch mb-3'>
                     <input type="checkbox" className='form-check-input'  name="isPinnedStartTime" id="isPinnedStartTime" checked={task.isPinnedStartTime} onChange={handleChange}/>
@@ -136,7 +130,7 @@ function AddTask(props) {
                     <label htmlFor='durationOfBreak' className='form-label'>Break (minutes):</label>
                     { errors.durationOfBreak ? <p className='text-danger form-text'>{errors.durationOfBreak.message}</p> : null }
                 </div>
-                <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Add" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/">Cancel</Link>
+                <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Add" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/tasks">Cancel</Link>
               </form>
               <span className='' ></span>
           </div>

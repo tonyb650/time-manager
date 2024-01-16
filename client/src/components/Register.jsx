@@ -21,17 +21,10 @@ function Register(props) {
         e.preventDefault();
         axios.post("http://localhost:8000/api/register", user, {withCredentials:true})
         .then((res) => {
-          // console.log("successfully saved");
-          // console.log(res);
-          // console.log(res.data._id)
-          // setUserId(res.data.user._id)
           sessionStorage.setItem('userId', res.data.user._id)
           navigate("/tasks");
         })
         .catch(err => {
-          // console.log("in catch attempting registration save to DB")
-          // console.log(err)
-          // console.log(err.response.data.message)
           setErrors(err.response.data.message)
         })
     }

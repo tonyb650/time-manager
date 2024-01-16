@@ -1,4 +1,4 @@
-import { toDateObject, toTimeString, toTwelveHour } from "../../utils/formatDate";
+import { toDateObject, toTimeString } from "../../utils/formatDate";
 import  addMinutes  from "../../utils/addMinutes";
 
 function EndTime(props) {

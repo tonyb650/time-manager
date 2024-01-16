@@ -12,10 +12,8 @@ app.use(cookieParser());
 require("./config/mongoose.config");
 require('dotenv').config();
 
-require("./routes/task.routes")(app);
-// require("./routes/user.routes")(app);
-const userRoutes = require("./routes/user.routes")
-userRoutes(app)
-
+const userRoutes = require("./routes/user.routes")  // userRoutes function
+userRoutes(app)                                     // call userRoutes function with app (aka 'express()') as argument
+require("./routes/task.routes")(app);               // This does both of the above in one line
 
 app.listen(port, ()=> console.log(`Express is listening on port ${port}`));

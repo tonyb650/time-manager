@@ -14,30 +14,24 @@ function CompleteButton(props) {
     let targetTask = { ...task };
     let taskListCopy = [...taskList]
 
-    // * Calculate number of minutes elapsed
-    let elapsedMinutes = minutesDiff(toDateObject(targetTask.taskDate,targetTask.startTime), new Date());
-
-    // * Set actualTotalDuration for task ()
-    targetTask.actualTotalDuration = elapsedMinutes;
-    
-    // * Handle situation where elapsedMinutes is fewer than durationOfBreak
-    if (elapsedMinutes < targetTask.durationOfBreak) {
+    let elapsedMinutes = minutesDiff(toDateObject(targetTask.taskDate,targetTask.startTime), new Date()); // Calculate number of minutes elapsed
+    targetTask.actualTotalDuration = elapsedMinutes;                                                      // Set actualTotalDuration for task
+    if (elapsedMinutes < targetTask.durationOfBreak) {                                                    // Handle situation where elapsedMinutes is fewer than durationOfBreak
       targetTask.durationOfBreak = elapsedMinutes;
       targetTask.durationOfTask = 0;
     } else {
       targetTask.durationOfTask = elapsedMinutes - targetTask.durationOfBreak;
     }
-    // * Update this task in DB
+    // *Update this task in DB*
     axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
     .then(res => { 
-      console.log("Patched task with non-null actualTotalDuration");
+      // console.log("Patched task with non-null actualTotalDuration in CompleteButton.jsx");
     })
     .catch(err => console.error(err));
-    // * Update this task in taskList & re-sort
-    taskListCopy[index] = targetTask;
-    setTaskList(SortTasks( taskListCopy ));
-    // * If we were paused, then unpause
-    setIsPaused(false);
+
+    taskListCopy[index] = targetTask;                                                                     // Update this task in taskList 
+    setTaskList(SortTasks( taskListCopy ));                                                               // Sort taskList and update
+    setIsPaused(false);                                                                                   // If we were paused, then unpause
   };
 
   return (

@@ -10,15 +10,16 @@ import NavBar from "../components/NavBar";
 import { toDateObject, toISODateString } from "../utils/formatDate";
 
 function DailyTasks(props) {
-  /* Initialize state */
+  /* Initialize state & context */
   const {taskList, setTaskList} = useContext(TaskListContext);
   const [currTime, setCurrTime] = useState();
   const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
   const [isPaused, setIsPaused] = useState(false);
   
-  /* Load Main Content */
+  /* Load Main Content any time date (renderDate) is changed */
   useEffect(() => {
     setIsPaused(false);                                     // Unpause whenever we change date
+    // TODO: will be better to get only the current user's tasks, not all tasks and filter
     axios
       .get("http://localhost:8000/api/tasks", { withCredentials : true })
       .then((res) => {
@@ -33,9 +34,9 @@ function DailyTasks(props) {
       .catch((err) => console.log(err));
   }, [renderDate]);
 
+  /* This next useEffect triggers a re-render of the page when the value in currTime changes.
+  This will change styling for tasks in case there is 'currently active task or break.*/
   useEffect(() => {
-    /* This useEffect triggers a re-render of the page when the value in currTime changes.
-    This will change styling for tasks in case there is 'currently active task or break.*/
     console.log("re-render on new minute coming from *currTime*")
     /* We will also check here for transition to/from a new task and play a sound */
     for(let i=0; i< taskList.length; i++){
@@ -55,7 +56,7 @@ function DailyTasks(props) {
         // console.log("Time to end task & end break")
         let targetTask = {...taskList[i]}
         targetTask.actualTotalDuration = targetTask.durationOfTask+targetTask.durationOfBreak;
-        // Do we need to save this to the DB? Maybe not, because it will be updated on the next screen refresh anyway ?
+        // TODO: Do we need to save this to the DB? Maybe not, because it will be updated on the next screen refresh anyway ?
         let taskListCopy = [...taskList]
         taskListCopy[i] = targetTask;
         setTaskList(taskListCopy)
@@ -64,9 +65,9 @@ function DailyTasks(props) {
     }
     // TODO: Might need a way to make sure that it doesn't keep adding minutes on re-render of DailyTasks?
     /* When currTime increments, we also want to check if isPaused == true.
-      If it is, we loop through all the tasks and see if one is currently active.
+      If it is, we loop through all the tasks to see if one is currently active.
       If there is one, then add 1 minute to durationOfTask AND save to DB.
-      That will also require and tasks that follow to have an updated startTime, 
+      That will also require that the tasks that follow have startTime updated, 
       which should be handled by the SortTasks function. */
     if(isPaused){
       let thereIsAnActiveTask = false;
@@ -74,7 +75,7 @@ function DailyTasks(props) {
         const taskStartTimeObj = toDateObject(taskList[i].taskDate,taskList[i].startTime)
         if(taskStartTimeObj < new Date() && addMinutes(taskStartTimeObj, taskList[i].durationOfTask) > new Date()){ // Test to see if this is the currently active task
           thereIsAnActiveTask = true;
-          taskList[i].durationOfTask += 1                                             // if it is currently active task, then increase duration by one minute
+          taskList[i].durationOfTask += 1                           // if it is currently active task, then increase duration by one minute
           // * Now save to DB with updated 'durationOfTask'
           axios
           .patch(
@@ -87,9 +88,9 @@ function DailyTasks(props) {
       }
       if(!thereIsAnActiveTask){ 
         console.log("unpausing on rerender of currTime ")
-        setIsPaused(false);                 // There is no active task, so we should not be paused
+        setIsPaused(false);                                         // There is no active task, so we should not be paused
       }
-      setTaskList(SortTasks( taskList ))    // Calling 'SortTasks' will cascade changes throughout today's tasks
+      setTaskList(SortTasks( taskList ))                            // Calling 'SortTasks' will cascade changes throughout today's tasks
     }
   },[currTime])
 

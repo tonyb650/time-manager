@@ -40,17 +40,17 @@ module.exports = {
         return res.sendStatus(400).json({message:"Invalid Credentials"});
       }
     }
-      catch(err){
-        res.status(400).json(err);
-      }
-    },
+    catch(err){
+      res.status(400).json(err);
+    }
+  },
     
-    logout: (req, res) => {
-      res.clearCookie('userToken');
-      res.sendStatus(200);
+  logout: (req, res) => {
+    res.clearCookie('userToken');
+    res.sendStatus(200);
   },
 
-  // THIS WAS FOR AUTHORIZATION TESTING ONLY. Can remove 'getAll' later
+  // THIS WAS FOR AUTHORIZATION TESTING ONLY. Can remove 'getAll' later.
   getAll : async (req, res) => {
     try {
       console.log("inside GetAllUsers")
@@ -64,5 +64,4 @@ module.exports = {
       res.status(400).json(err);
     }
   }
-
 }
