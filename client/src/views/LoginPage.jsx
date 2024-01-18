@@ -3,6 +3,9 @@ import Register from '../components/Register'
 import Login from '../components/Login'
 
 function LoginPage() {
+
+  // TODO: if there is already a cookie / sessionStorage, then redirect to /tasks ??? -OR- automatically log out ????
+
   return (
 <div className="container">
 		<div className="text-center">

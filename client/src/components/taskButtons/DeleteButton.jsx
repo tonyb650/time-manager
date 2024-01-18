@@ -12,7 +12,7 @@ function DeleteButton(props) {
     window.confirm("add modal here")
     //https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm
 
-    axios.delete(`http://localhost:8000/api/tasks/${taskId}`)
+    axios.delete(`http://localhost:8000/api/tasks/${taskId}`, { withCredentials : true})
     .then(res => { 
       console.log("Successfully deleted.")
       let filteredArr = taskList.filter((task) =>  task._id != taskId)

@@ -28,7 +28,7 @@ export function toLocalDateString(ISODateString) {
 }
 
 /**
- * toTimeSTring function
+ * toTimeString function
  * Accepts date object and returns string
  * for *local* time in 24 hours format "HH:mm"
  * @param {date} dateObj   date object eg: 2023-12-23T20:30:00.000Z

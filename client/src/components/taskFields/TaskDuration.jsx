@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import TaskListContext from "../../context/TaskListContext";
 import SortTasks from "../../utils/SortTasks";
 import axios from "axios";
+import patchTask from "../../utils/patchTask";
 
 function TaskDuration(props) {
   const { task, index } = props;
@@ -39,16 +40,12 @@ function TaskDuration(props) {
     targetTask.durationOfTask = displayDuration;        // update durationOfTask on copy
     taskListCopy[index] = targetTask;                   // update taskList copy with updated task
 
-    //TODO: possible way to handle automatic unpausing ( might be desirable if shortening duration of current & paused task makes end of task time earlier than current time)
+    //TODO: possible way to handle automatic unpausing ( might be desirable to unpause if shortening duration of current & paused task makes end of task time earlier than current time)
     // call activeID utility function --> pass in sorted taskListCopy, get back taskID of newly active task (if any)
     // if newly activeID != pausedID, then set pausedID to null 
 
+    patchTask(targetTask, false, "Patched targetTask successful in TaskDuration.jsx")       // Update this task in DB
     setTaskList(SortTasks( taskListCopy ));             // sort taskList and then update context taskList
-
-    // * Now save updated targetTask to DB *
-    axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
-    .then(res => {})
-    .catch(err => console.error(err));
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import NavBar from '../components/NavBar';
@@ -10,6 +10,10 @@ function AddTask(props) {
   // TODO: handle if sessionStorage-> userId is not present or not valid
   const userId = sessionStorage.getItem('userId')
 
+  // TODO add useEffect here
+  if(userId == null){
+    navigate("/");
+  }
   // Set up blank task object with useState destructuring
   const initialTaskDate = toISODateString(new Date());
   const initialStartTime = "08:00"

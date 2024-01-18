@@ -19,7 +19,13 @@ module.exports = {
         .then(oneTask => res.json(oneTask))
         .catch(err => res.status(400).json(err))
     },
-    
+
+    getTaskByUserId : (req,res) => {
+        Task.find( {userId: req.params.id})
+        .then(usersTasks => res.json(usersTasks))
+        .catch(err => res.status(400).json(err))
+    },
+
     updateTask : (req,res) => {
         Task.findOneAndUpdate ({_id : req.params.id}, req.body, {new:true, runValidators:true})
         .then(updatedTask => res.json(updatedTask))

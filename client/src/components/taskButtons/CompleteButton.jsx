@@ -4,6 +4,7 @@ import minutesDiff from "../../utils/minutesDiff";
 import SortTasks from "../../utils/SortTasks";
 import axios from "axios";
 import { toDateObject } from "../../utils/formatDate";
+import patchTask from "../../utils/patchTask";
 
 function CompleteButton(props) {
   const { task, index, setIsPaused } = props;
@@ -22,13 +23,8 @@ function CompleteButton(props) {
     } else {
       targetTask.durationOfTask = elapsedMinutes - targetTask.durationOfBreak;
     }
-    // *Update this task in DB*
-    axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
-    .then(res => { 
-      // console.log("Patched task with non-null actualTotalDuration in CompleteButton.jsx");
-    })
-    .catch(err => console.error(err));
 
+    patchTask(targetTask, false, "Patched task with non-null actualTotalDuration in CompleteButton.jsx")   // Update this task in DB
     taskListCopy[index] = targetTask;                                                                     // Update this task in taskList 
     setTaskList(SortTasks( taskListCopy ));                                                               // Sort taskList and update
     setIsPaused(false);                                                                                   // If we were paused, then unpause

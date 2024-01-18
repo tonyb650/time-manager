@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import chevron2down from "../../assets/img/chevron-double-down.svg";
-import axios from "axios";
 import TaskListContext from "../../context/TaskListContext";
 import SortTasks from "../../utils/SortTasks";
 import addMinutes from "../../utils/addMinutes";
 import taskEndTime from "../../utils/taskEndTime";
 import { toTimeString } from "../../utils/formatDate";
+import patchTask from "../../utils/patchTask";
 
 function MoveToBottom(props) {
   const { taskList, setTaskList } = useContext(TaskListContext);
@@ -33,22 +33,11 @@ function MoveToBottom(props) {
     targetTask.isPinnedStartTime = false;                                                   // By moving to the bottom, we are 'unpinning' this task
     if(!taskListCopy[1].isPinnedStartTime){                                                 // Check if new 'first' task is not already 'pinned' 
       taskListCopy[1].isPinnedStartTime = true;                                             // If not, then set PinnedStartTime = true and save record to DB
-      axios.patch(`http://localhost:8000/api/tasks/${taskListCopy[1]._id}`, taskListCopy[1])
-      .then(res => { 
-        // console.log("Patched new earliest (now pinned) in MoveToBottom.jsx");
-      })
-      .catch(err => console.error(err));
+      patchTask(taskListCopy[1], false, "Patched new earliest (now pinned) in MoveToBottom.jsx")   // Update this task in DB
     }
-
+    patchTask(targetTask, false, "Patched targetTask successful in MoveToBottom.jsx")       // Update this task in DB
     taskListCopy[index] = targetTask;                                                       // Update taskList with modified task
     setTaskList(SortTasks( taskListCopy ));                                                 // Sort and update taskList (in context)
-
-    // * Now save updated targetTask to DB
-    axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
-    .then(res => { 
-      // console.log("Patched targetTask successful in MoveToBottom.jsx");
-    })
-    .catch(err => console.error(err));
   }
 
   return (

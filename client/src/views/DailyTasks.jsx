@@ -8,6 +8,7 @@ import CantinaBand3 from "../assets/sound/CantinaBand3.wav";
 import taskEndTime from "../utils/taskEndTime";
 import NavBar from "../components/NavBar";
 import { toDateObject, toISODateString } from "../utils/formatDate";
+import patchTask from "../utils/patchTask";
 
 function DailyTasks(props) {
   /* Initialize state & context */
@@ -15,20 +16,17 @@ function DailyTasks(props) {
   const [currTime, setCurrTime] = useState();
   const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
   const [isPaused, setIsPaused] = useState(false);
+  const userId = sessionStorage.getItem('userId');
   
   /* Load Main Content any time date (renderDate) is changed */
   useEffect(() => {
     setIsPaused(false);                                     // Unpause whenever we change date
-    // TODO: will be better to get only the current user's tasks, not all tasks and filter
     axios
-      .get("http://localhost:8000/api/tasks", { withCredentials : true })
+      .get(`http://localhost:8000/api/tasks/users/${userId}`, { withCredentials : true })
       .then((res) => {
-        /*Filter res.data (all tasks) down to only tasks with taskDate == renderDate */
         // TODO: make sure that filter will work in all time zones
         const userId = sessionStorage.getItem('userId')
-        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate) && element.userId == userId);
-        // console.log("Filtered Tasks:")
-        // console.table(tasksForDay);
+        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate) && element.userId == userId);  // Filter res.data (all tasks) down to only tasks with taskDate == renderDate
         setTaskList(SortTasks(tasksForDay));
       })
       .catch((err) => console.log(err));
@@ -76,14 +74,7 @@ function DailyTasks(props) {
         if(taskStartTimeObj < new Date() && addMinutes(taskStartTimeObj, taskList[i].durationOfTask) > new Date()){ // Test to see if this is the currently active task
           thereIsAnActiveTask = true;
           taskList[i].durationOfTask += 1                           // if it is currently active task, then increase duration by one minute
-          // * Now save to DB with updated 'durationOfTask'
-          axios
-          .patch(
-            `http://localhost:8000/api/tasks/${taskList[i]._id}`,
-            taskList[i]
-          )
-          .then((res) => console.log("Add 1 minute to duration and save"))
-          .catch((err) => console.error(err));
+          patchTask(taskList[i], true, "Add 1 minute to duration and save")   // Update this task in DB
         }
       }
       if(!thereIsAnActiveTask){ 

@@ -1,6 +1,6 @@
-import axios from "axios";
 import taskEndTime from "./taskEndTime";
 import { toDateObject, toTimeString } from "./formatDate";
+import patchTask from "./patchTask";
 
 export default function SortTasks(tempArr) {
   console.log("Called SortTasks");
@@ -62,12 +62,7 @@ export default function SortTasks(tempArr) {
 
     // *If currentTask has been flagged as modified, update it in DB*
     if(isTaskModified){
-      axios
-      .patch(`http://localhost:8000/api/tasks/${currentTask._id}`, currentTask,  { withCredentials : true })
-      .then((res) => {
-        // console.log(`Saved task as part of sorting process: ${currentTask.taskTitle}`)
-      })
-      .catch((err) => console.error(err)); // throw here?
+      patchTask(currentTask, false, "Patched task as part of sorting process in SortTask.js")   // Update this task in DB
     }
 
     nextAvailableStart = taskEndTime(currentTask)                 // Update 'nextAvailableStart' to be immediately after this task

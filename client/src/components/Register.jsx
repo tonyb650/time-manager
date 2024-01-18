@@ -21,7 +21,7 @@ function Register(props) {
         e.preventDefault();
         axios.post("http://localhost:8000/api/register", user, {withCredentials:true})
         .then((res) => {
-          sessionStorage.setItem('userId', res.data.user._id)
+          sessionStorage.setItem('userId', res.data.user._id) // TODO CODE REVIEW -> best way to handle accessing userId on client side ? localStorage? sessionStorage?
           navigate("/tasks");
         })
         .catch(err => {

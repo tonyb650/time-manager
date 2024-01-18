@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import TaskListContext from "../../context/TaskListContext";
 import SortTasks from "../../utils/SortTasks";
-import axios from "axios";
 import { toDateObject } from "../../utils/formatDate";
 import addMinutes from "../../utils/addMinutes";
+import patchTask from "../../utils/patchTask";
 
 function StartTime(props) {
   const { task, index } = props;
@@ -41,22 +41,17 @@ function StartTime(props) {
         const isActiveBreak = addMinutes(toDateObject(nextTask.taskDate,nextTask.startTime), nextTask.durationOfTask) < new Date() && addMinutes(toDateObject(nextTask.taskDate,nextTask.startTime), nextTask.durationOfTask+nextTask.durationOfBreak) > new Date();
         if (isActiveTask || isActiveBreak){
           nextTask.isPinnedStartTime = true;
-          // *Now save updated targetTask to DB*
-          axios.patch(`http://localhost:8000/api/tasks/${nextTask._id}`, nextTask)
-          .then(res => {})
-          .catch(err => console.error(err));
+          taskListCopy[index+1] = nextTask;             // This line is not technically necessary because it will be handled when the taskList is sorted
+          patchTask(nextTask, false, "Patched task following targetTask (pinned) successful in StartTime.jsx")       // Update this task in DB
         }
       }
     }
     taskListCopy[index] = targetTask;                   // update taskList copy with updated task
-
+    
     //TODO: possibly handle automatic unpausing, see notes in TaskDuration.jsx about this
-
+    
+    patchTask(targetTask, false, "Patched targetTask successful in StartTime.jsx")       // Update this task in DB
     setTaskList(SortTasks( taskListCopy ));             // sort taskList and then update context taskList
-    // *Now save updated targetTask to DB*
-    axios.patch(`http://localhost:8000/api/tasks/${targetTask._id}`, targetTask)
-    .then(res => {})
-    .catch(err => console.error(err));
   }
 
   return (
