@@ -1,6 +1,7 @@
 import React from 'react'
 import Register from '../components/Register'
 import Login from '../components/Login'
+import highfive from '../assets/img/login-photo.jpg'
 
 function LoginPage() {
 
@@ -17,12 +18,15 @@ function LoginPage() {
 		<div className="container login-container">
 			<div className="row">
 				<div className="col-md-6 login-form-1">
-					<h2>Register New User</h2>
-          <Register/>
+          <div className='d-none d-lg-block'>
+            <img src={highfive} alt="Coworkers celebrating" className='img-fluid'/>
+          </div>
+        <h2>User Login</h2>
+          <Login/>
 				</div>
 				<div className="col-md-6 login-form-2">
-					<h2>User Login</h2>
-          <Login/>
+        <h2>Register New User</h2>
+          <Register/>
 				</div>
 			</div>
 		</div>

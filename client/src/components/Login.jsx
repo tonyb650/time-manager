@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState("");
   const [email,setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -14,7 +15,13 @@ function Login() {
         sessionStorage.setItem('userId', res.data.user._id)
         navigate('/tasks');
       } )
-      .catch(err => console.log(err))
+      .catch(err => {
+        // console.log(err)
+        // console.log(err.response)
+        // console.log(err.response.data)
+        // console.log(err.response.data.message)
+        setErrors(err.response.data.message)
+      })
   }
 
   return (
@@ -27,6 +34,7 @@ function Login() {
           <input type="text" className="form-control" name="password" placeholder='Password *' value={password} onChange={(e) => setPassword(e.target.value)}/>
         </div>
         <div className='form-group my-2'>
+          { errors && ( <p className='text-danger form-text'>{errors}</p> )}
           <button className='btnSubmit'>Log in</button>
         </div>
       </form>

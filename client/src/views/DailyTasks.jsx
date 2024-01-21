@@ -9,12 +9,14 @@ import taskEndTime from "../utils/taskEndTime";
 import NavBar from "../components/NavBar";
 import { toDateObject, toISODateString } from "../utils/formatDate";
 import patchTask from "../utils/patchTask";
+import RenderDateContext from "../context/RenderDateContext";
 
 function DailyTasks(props) {
   /* Initialize state & context */
   const {taskList, setTaskList} = useContext(TaskListContext);
+  const {renderDate, setRenderDate} = useContext(RenderDateContext);
   const [currTime, setCurrTime] = useState();
-  const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
+  // const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
   const [isPaused, setIsPaused] = useState(false);
   const userId = sessionStorage.getItem('userId');
   
@@ -86,22 +88,24 @@ function DailyTasks(props) {
   },[currTime])
 
   return (
-    <div className="container">
-      <NavBar currTime={currTime} setCurrTime={setCurrTime} setRenderDate={setRenderDate}/>
-      {taskList.map((task, index) => {
-        return (
-          <div key={index}>
-            <Task
-              task={task}
-              index={index}
-              currTime={currTime}
-              isPaused={isPaused}
-              setIsPaused={setIsPaused}
-            />
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <NavBar currTime={currTime} setCurrTime={setCurrTime} />
+      <div className="container">
+        {taskList.map((task, index) => {
+          return (
+            <div key={index}>
+              <Task
+                task={task}
+                index={index}
+                currTime={currTime}
+                isPaused={isPaused}
+                setIsPaused={setIsPaused}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 

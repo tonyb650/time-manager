@@ -8,7 +8,7 @@ module.exports = {
     try {
       const possibleUser = await User.findOne({ email : req.body.email })
       if (possibleUser) {
-        res.status(400).json({ message : 'This email already exists. Please log in.' })
+        res.status(400).json({errors: { email : { message : 'This email already exists. Please log in.' }}})
       } else {
         const newUser = await User.create(req.body)
         const userToken = jwt.sign({ _id : newUser._id, email : newUser.email }, SECRET, { expiresIn: '2h' });

@@ -1,87 +1,155 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import {Link, useNavigate, useParams} from "react-router-dom";
+import axios from 'axios';
+import NavBar from '../components/NavBar';
+import { toISODateString } from '../utils/formatDate';
+import patchTask from '../utils/patchTask';
 
-function EditTask() {
-    const navigate = useNavigate();
+function EditTask(props) {
+  // TODO: handle if sessionStorage-> userId is not present or not valid
+  // TODO: cookie and/or token expired
+  const userId = sessionStorage.getItem('userId')
+  if(userId == null){
+    navigate("/");
+  }
 
-    // useState destructuring
-    const [ taskTitle, setTaskTitle]= useState("");
-    const [ taskBody, setTaskBody]= useState("");
-    const [ durationOfTask, setDurationOfTask]= useState(0);
-    const [ durationOfBreak, setDurationOfBreak]= useState(0);
-    const [ parentId, setParentId]= useState("");
-    const [ timePicker, setTimePicker]= useState("08:00");
-    const [ datePicker, setDatePicker]= useState(new Date().toISOString().substring(0,10)); // Need to fix this but I'll come back to it. It uses GMT instead of Pacific time...
-    const [ isComplete, setIsComplete]= useState(false);
-    const [ errors, setErrors] = useState([]);
-  
-    // "Submit" button pressed = "handleSubmit"
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      const dateParts = datePicker.split("-");     // split() datePicker format = "2012-10-12"
-      const timeParts = timePicker.split(":");     // split() timePicker format = "12:30"
-      // combine dateParts & timeParts to create new Date object to be stored in task object
-      const selectedDateTime = new Date(dateParts[0], dateParts[1]-1, dateParts[2], timeParts[0], timeParts[1]);
-      // Now, create taskObject with all the fields
-      const taskObject = {taskTitle, taskBody, durationOfTask, durationOfBreak, parentId, "startTimeScheduled" : selectedDateTime, isComplete, "taskDate" : selectedDateTime}
-      console.log(taskObject)
-      taskObject.startTimeActual = null;
-      console.log(taskObject)
-      axios.patch('http://localhost:8000/api/tasks', taskObject)
-        .then(res => { 
-            console.log(res);
-            navigate('/')
-        })
-        .catch(err => {
-          console.log(err);
-          const errorArray=[];
-          const responseErrors = err.response.data.errors;
-          for(const key of Object.keys(responseErrors)) {
-            errorArray.push(responseErrors[key].message);
-          }
-          setErrors(errorArray);
-        })
-      }
-  
-    return (
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [ task, setTask ] = useState({
+    _id : '',
+    taskTitle: '',
+    taskBody: '',
+    durationOfTask: '',
+    durationOfBreak: '',
+    actualTotalDuration: '',
+    startTime: '',
+    isPinnedStartTime: false,
+    taskDate: '',
+    userId: ''
+  });
+
+  const [ errors, setErrors] = useState({                           // Set up state to hold validation errors
+    durationOfBreak : '',                                           // Note: error properties look like this: 
+    durationOfTask : '',                                            // { fieldName : { message : "fieldName does not meet validations"}}
+    taskTitle : ''
+  }); 
+
+  /* Initialize 'errors' object upon first load of page*/
+  let formIsValid = true;                                                                       // 'formIsValid' controls enable/disable of form Submit button
+  formIsValid = errors.durationOfBreak=="" && errors.durationOfTask=="" && errors.taskTitle==""; // Empty string means that each field has been checked in "onBlur"
+
+
+
+  useEffect(() => {                                                 // Get task from DB and setTask in state
+    axios.get(`http://localhost:8000/api/tasks/${id}`, { withCredentials : true })
+    .then(res => {
+      setTask ( {...res.data} );
+    })
+    .catch(err => console.error(err));
+  },[]);
+
+  const handleChange = (e) => {                                     // Handle changes on form fields here
+    if(e.target.type.toLowerCase()=="checkbox"){
+      setTask({
+        ...task,
+        [e.target.name] : e.target.checked
+      })
+    } else {
+      setTask({
+        ...task,
+        [e.target.name] : e.target.value
+      })
+    }
+  }
+
+  /* Handle client-side validations here.
+    'onBlur' means when a user clicks off of a form field.
+    At that point, we check if the e.target.value passes validations */
+  const handleBlur = (e) => {
+    switch (e.target.name){
+      case 'taskTitle':
+        if(e.target.value.trim().length < 2){
+          setErrors({...errors,  taskTitle :{ message: "Task title is required"}});
+        } else {
+          setTask({...task, taskTitle : e.target.value.trim()});
+          setErrors({...errors,  taskTitle : "" });
+        }
+        break;
+      case 'taskBody':
+        setTask({...task, taskBody : e.target.value.trim()});
+        break;
+      case 'durationOfTask':
+        if(Number.isNaN(e.target.value) || e.target.value < 1){
+          setErrors({...errors,  durationOfTask :{ message: "Task duration is required"}});
+        } else {
+          setErrors({...errors,  durationOfTask : "" });
+        }
+        break;
+      case 'durationOfBreak':
+        if(!e.target.value==""){                                    // this is here to clear any back-end error when 0 or other number is entered
+          setErrors({...errors,  durationOfBreak : "" });
+        }
+        break;
+      default:
+        throw new Error("unexpected target name: "+e.target.name);
+    }
+  }
+
+
+  const handleSubmit = (e) => {                                     // Handle form submission here
+    e.preventDefault();
+    patchTask(task,false,"Successfully patched updated task in EditTask.jsx")
+    navigate("/tasks");
+  }
+
+  return (
+    <>
+      {/* <NavBar/> */}
       <div className="container">
-        <form onSubmit={handleSubmit}>
-          <div>
-              <label>taskTitle:</label>
-              <input type="text" value={taskTitle} onChange={(e) => {setTaskTitle(e.target.value)}}/>
+        <div className="card mt-3">
+          <div className="card-body">
+              <h3 className="text-info">Update Task</h3>
+              <form onSubmit={handleSubmit}>
+                <div className='form-floating mb-3'>
+                  <input type="text" className='form-control' name="taskTitle" id="taskTitle" placeholder='taskTitle:' value={task.taskTitle} onChange={handleChange} onBlur={handleBlur}/>
+                  <label htmlFor='taskTitle' className='form-label'>Task Title:</label>
+                  { errors.taskTitle && ( <p className='text-danger form-text'>{errors.taskTitle.message}</p> )}
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="text" className='form-control'  name="taskBody" id="taskBody" placeholder="taskBody" value={task.taskBody} onChange={handleChange} onBlur={handleBlur}/>
+                    <label htmlFor='taskBody' className='form-label'>Details:</label>
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="date" className='form-control'  name="taskDate" id="taskDate" value={task.taskDate} onChange={handleChange}/>
+                    <label htmlFor='taskDate' className='form-label'>Date:</label>
+                    { errors.taskDate ? <p className='text-danger form-text'>{errors.taskDate.message}</p> : null }
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="time" className='form-control'  name="startTime" id="startTime" value={task.startTime} onChange={handleChange}/>
+                    <label htmlFor='startTime' className='form-label'>Time:</label>
+                </div>
+                <div className='form-check form-switch mb-3'>
+                    <input type="checkbox" className='form-check-input'  name="isPinnedStartTime" id="isPinnedStartTime" checked={task.isPinnedStartTime} onChange={handleChange}/>
+                    <label htmlFor='isPinnedStartTime' className='form-check-label'>isPinnedStartTime:</label>
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="number" className='form-control'  name="durationOfTask" id="durationOfTask" placeholder="durationOfTask" value={task.durationOfTask} onChange={handleChange} onBlur={handleBlur} />
+                    <label htmlFor='durationOfTask' className='form-label'>Duration (minutes):</label>
+                    { errors.durationOfTask ? <p className='text-danger form-text'>{errors.durationOfTask.message}</p> : null }
+                </div>
+                <div className='form-floating mb-3'>
+                    <input type="number" className='form-control'  name="durationOfBreak" id="durationOfBreak" placeholder="durationOfBreak" value={task.durationOfBreak} onChange={handleChange} onBlur={handleBlur}/>
+                    <label htmlFor='durationOfBreak' className='form-label'>Break (minutes):</label>
+                    { errors.durationOfBreak ? <p className='text-danger form-text'>{errors.durationOfBreak.message}</p> : null }
+                </div>
+                <input className={`btn btn-outline-info ${ formIsValid ? '' : 'disabled' }`} type="submit" value="Update" /><Link className='btn btn-outline-secondary text-decoration-none mx-3' to="/tasks">Cancel</Link>
+              </form>
+              <span className='' ></span>
           </div>
-          <div>
-              <label>taskBody:</label>
-              <input type="text" value={taskBody} onChange={(e) => {setTaskBody(e.target.value)}}/>
-          </div>
-          <div>
-              <label>date:</label>
-              <input type="date" value={datePicker} onChange={(e) => {setDatePicker(String(e.target.value))}}/>
-          </div>  
-          <div>
-              <label>time:</label>
-              <input type="time" value={timePicker} onChange={(e) => {setTimePicker(String(e.target.value))}}/>
-          </div>   
-          <div>
-              <label>durationOfTask:</label>
-              <input type="number" value={durationOfTask} onChange={(e) => {setDurationOfTask(e.target.value)}}/>
-          </div>        
-          <div>
-              <label>durationOfBreak:</label>
-              <input type="number" value={durationOfBreak} onChange={(e) => {setDurationOfBreak(e.target.value)}}/>
-          </div>        
-          <div>
-              <label>isComplete:</label>
-              <input type="checkbox" value={isComplete} onChange={(e) => {(isComplete) ? setIsComplete(false) : setIsComplete(true)}}/>
-          </div>        
-          <div>
-              <label>parentId:</label>
-              <input type="text" value={parentId} onChange={(e) => {setParentId(e.target.value)}}/>
-          </div>
-          <input className="btn btn-secondary" type="submit" value="Add" />
-        </form>
-        <Link to="/">Cancel</Link>
+        </div>
       </div>
-    )
+    </>
+  )
 }
 
-export default EditTask
+export default EditTask;

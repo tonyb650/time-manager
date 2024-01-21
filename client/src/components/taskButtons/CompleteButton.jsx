@@ -32,7 +32,7 @@ function CompleteButton(props) {
 
   return (
     <div className="col-6 col-xs-12 col-sm-12 col-md-12 d-grid my-1">
-      <button className="btn btn-success" onClick={handleComplete}>Complete Now</button>
+      <button className="btn btn-info" onClick={handleComplete}>Complete Now</button>
     </div>
   );
 }

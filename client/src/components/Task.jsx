@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import pushpin from "../assets/img/pin-angle-fill.svg";
 import editpencil from "../assets/img/pencil-fill.svg";
-
+import calendar from "../assets/img/calendar4-event.svg"
 import { toDateObject } from "../utils/formatDate";
 import addMinutes from "../utils/addMinutes";
 
@@ -28,7 +28,7 @@ function Task(props) {
   
   return (
     <>
-      <div className={"container border rounded my-2 pt-1 "+( isActiveTask ? isPaused ? "border-warning border-3":"border-success border-3" : "")}>
+      <div className={"container border rounded my-2 pt-1 "+( isActiveTask ? isPaused ? "border-warning border-3":"border-info border-3" : "")}>
         <div className="row">
           <div className="col-12 col-xs-4 col-sm-4 col-lg-2">
             <div className="container">
@@ -52,12 +52,12 @@ function Task(props) {
                 {task.isPinnedStartTime ? (
                   <span><img src={pushpin} />  </span>
                 ) : null}
-                  <Link className="text-white text-decoration-none" to={`/task/edit/${task._id}`}>
+                  <Link className="text-white text-decoration-none" to={`/tasks/edit/${task._id}`}>
                     {task.taskTitle}
                   </Link>
                 </h3>
                 <span>
-                  <Link to={`/task/edit/${task._id}`}>
+                  <Link to={`/tasks/edit/${task._id}`}>
                     <img src={editpencil} className="border rounded mx-1 p-1"/>
                   </Link>
                   <DeleteButton taskId = {task._id}/>

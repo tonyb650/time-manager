@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { toISODateString, toLocalDateString } from "../utils/formatDate";
+import RenderDateContext from "../context/RenderDateContext";
 
 function DatePicker(props) {
-  const { setRenderDate } = props;
-  const [ datePicker, setDatePicker]= useState(toISODateString(new Date())); // 'datePicker' is a string in format YYYY-mm-dd (ISO)
+  const { renderDate, setRenderDate } = useContext(RenderDateContext);
+  const [ datePicker, setDatePicker]= useState(toISODateString(renderDate)); // 'datePicker' is a string in format YYYY-mm-dd (ISO)
 
   // * Handle user picking a date*
   const handleDatePick = (e) => {

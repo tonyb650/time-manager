@@ -18,9 +18,7 @@ function DeleteButton(props) {
       let filteredArr = taskList.filter((task) =>  task._id != taskId)
       setTaskList(SortTasks(filteredArr))
     })
-    .catch(err => {
-      setErrors(err.response.data.errors);
-    })
+    .catch(err => console.error(err));
   };
 
   return (

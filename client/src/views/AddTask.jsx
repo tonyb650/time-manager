@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import NavBar from '../components/NavBar';
 import { toISODateString } from '../utils/formatDate';
+import RenderDateContext from '../context/RenderDateContext';
 
 function AddTask(props) {
   const navigate = useNavigate();
-
+  const { renderDate, setRenderDate }= useContext(RenderDateContext);
   // TODO: handle if sessionStorage-> userId is not present or not valid
   const userId = sessionStorage.getItem('userId')
 
@@ -15,7 +16,7 @@ function AddTask(props) {
     navigate("/");
   }
   // Set up blank task object with useState destructuring
-  const initialTaskDate = toISODateString(new Date());
+  const initialTaskDate = toISODateString(renderDate);
   const initialStartTime = "08:00"
   const [ task, setTask ] = useState({
     taskTitle: '',
@@ -42,7 +43,6 @@ function AddTask(props) {
         [e.target.name] : e.target.checked
       })
     } else {
-      console.log("setTask")
       setTask({
         ...task,
         [e.target.name] : e.target.value
