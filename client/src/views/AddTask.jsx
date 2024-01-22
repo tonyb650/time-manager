@@ -7,14 +7,14 @@ import RenderDateContext from '../context/RenderDateContext';
 
 function AddTask(props) {
   const navigate = useNavigate();
-  const { renderDate, setRenderDate }= useContext(RenderDateContext);
-  // TODO: handle if sessionStorage-> userId is not present or not valid
-  const userId = sessionStorage.getItem('userId')
-
-  // TODO add useEffect here
-  if(userId == null){
+  
+  // TODO: this is a hack to redirect upon logout, correct technique might be AuthProvider context wrapper
+  const userName = sessionStorage.getItem('userName')
+  if(userName == null){
     navigate("/");
   }
+
+  const { renderDate, setRenderDate }= useContext(RenderDateContext);
   // Set up blank task object with useState destructuring
   const initialTaskDate = toISODateString(renderDate);
   const initialStartTime = "08:00"
@@ -26,14 +26,14 @@ function AddTask(props) {
     actualTotalDuration: '',
     startTime: initialStartTime,
     isPinnedStartTime: false,
-    taskDate: initialTaskDate,
-    userId: userId
+    taskDate: initialTaskDate
   });
   // Set up state to hold validation errors
   const [ errors, setErrors] = useState({}); // error properties look like this: { fieldName : { message : "fieldName does not meet validations"}}
 
   let formIsValid = false;                                                                       // 'formIsValid' controls enable/disable of form Submit button
   formIsValid = errors.durationOfBreak=="" && errors.durationOfTask=="" && errors.taskTitle==""; // Empty string means that each field has been checked in "onBlur"
+  // TODO: getting an error on above line for some reason with durationOfBreak is undefined. need to test this
 
   // *Handle changes on form fields here*
   const handleChange = (e) => {
@@ -53,6 +53,7 @@ function AddTask(props) {
   // *Handle client-side validations here*
   // 'onBlur' means when a user clicks off of a form field.
   // At that point, we check if the e.target.value passes validations
+  // TODO: When picking from auto-fill suggestions, onBlur doesn't format field correctly, something in CSS maybe
   const handleBlur = (e) => {
     switch (e.target.name){
       case 'taskTitle':

@@ -1,6 +1,5 @@
 import DisplayClock from "./DisplayClock";
 import { Link, useNavigate } from "react-router-dom";
-import alarm from "../assets/img/alarm.svg"
 import DatePicker from "./DatePicker";
 import plus from "../assets/img/plus-square.svg"
 import axios from "axios";
@@ -11,13 +10,14 @@ function NavBar(props) {
   const { currTime, setCurrTime } = props;
   const { renderDate, setRenderDate } = useContext(RenderDateContext);
   const navigate = useNavigate();
+  const userName = sessionStorage.getItem('userName');
 
   const logoutUser = () => {
     console.log("entered logout user")
     axios.post('http://localhost:8000/api/logout',{},{withCredentials:true})
     .then(res => {
-      console.log("successfully logged out");
-      sessionStorage.removeItem('userId');
+      sessionStorage.removeItem('userName');
+      setRenderDate(new Date());                                // As part of logging out, reset renderDate to today
       navigate("/");
     })
     .catch(err => console.log("error logging out"+err))
@@ -26,39 +26,16 @@ function NavBar(props) {
   return (
     <nav className="navbar navbar-expand-md navbar-colors navbar-dark">
       <div className="container">
-        {/* <span className="navbar-brand">
-          <img src={alarm} alt="Logo" />
-        </span> */}
-        <span className="navbar-brand">
+        <span className="me-2">
           <DisplayClock currTime={currTime} setCurrTime={setCurrTime} />
         </span>
         <span className="">
-          <DatePicker />
+          <DatePicker setRenderDate={setRenderDate} />
         </span>
         <Link to="/tasks/add">
           <img src={plus} height={26} alt="Add Task" />
         </Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link className="nav-link" aria-current="page">Templates</Link>
-            </li>
-            <li className="nav-item">
-          <a className="nav-link" href="#">Features</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">Pricing</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-          </ul>
-        </div>
-        {/* <button
+        <button
           className="navbar-toggler"
           data-bs-toggle="collapse"
           data-bs-target="#nav"
@@ -76,10 +53,10 @@ function NavBar(props) {
             <Link className="nav-link" aria-current="page">Settings</Link>
             </li>
             <li className="nav-item">
-              <button onClick={logoutUser} className="nav-link btn-link" aria-current="page">Logout</button>
+              <button onClick={logoutUser} className="nav-link btn-link" aria-current="page">Logout, {userName}</button>
             </li>
           </ul>
-        </div> */}
+        </div>
       </div>
     </nav>
   );

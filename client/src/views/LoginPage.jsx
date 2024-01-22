@@ -1,11 +1,11 @@
 import React from 'react'
 import Register from '../components/Register'
 import Login from '../components/Login'
-import highfive from '../assets/img/login-photo.jpg'
+import highFive from '../assets/img/login-photo.jpg'
 
 function LoginPage() {
 
-  // TODO: if there is already a cookie / sessionStorage, then redirect to /tasks ??? -OR- automatically log out ????
+  // TODO: if there is already a valid cookie & token, then redirect to /tasks ??? -OR- automatically log out ????
 
   return (
 <div className="container">
@@ -19,7 +19,7 @@ function LoginPage() {
 			<div className="row">
 				<div className="col-md-6 login-form-1">
           <div className='d-none d-lg-block'>
-            <img src={highfive} alt="Coworkers celebrating" className='img-fluid'/>
+            <img src={highFive} alt="Coworkers celebrating" className='img-fluid'/>
           </div>
         <h2>User Login</h2>
           <Login/>

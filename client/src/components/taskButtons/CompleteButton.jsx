@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import TaskListContext from "../../context/TaskListContext";
 import minutesDiff from "../../utils/minutesDiff";
 import SortTasks from "../../utils/SortTasks";
-import axios from "axios";
 import { toDateObject } from "../../utils/formatDate";
 import patchTask from "../../utils/patchTask";
 

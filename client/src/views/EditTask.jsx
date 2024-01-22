@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {Link, useNavigate, useParams} from "react-router-dom";
 import axios from 'axios';
-import NavBar from '../components/NavBar';
-import { toISODateString } from '../utils/formatDate';
 import patchTask from '../utils/patchTask';
 
 function EditTask(props) {
-  // TODO: handle if sessionStorage-> userId is not present or not valid
-  // TODO: cookie and/or token expired
-  const userId = sessionStorage.getItem('userId')
-  if(userId == null){
+  const navigate = useNavigate();
+
+  // TODO: this is a hack to redirect upon logout, correct technique might be AuthProvider context wrapper
+  const userName = sessionStorage.getItem('userName')
+  if(userName == null){
     navigate("/");
   }
 
-  const navigate = useNavigate();
   const { id } = useParams();
   const [ task, setTask ] = useState({
     _id : '',
@@ -24,8 +22,7 @@ function EditTask(props) {
     actualTotalDuration: '',
     startTime: '',
     isPinnedStartTime: false,
-    taskDate: '',
-    userId: ''
+    taskDate: ''
   });
 
   const [ errors, setErrors] = useState({                           // Set up state to hold validation errors
@@ -43,6 +40,8 @@ function EditTask(props) {
   useEffect(() => {                                                 // Get task from DB and setTask in state
     axios.get(`http://localhost:8000/api/tasks/${id}`, { withCredentials : true })
     .then(res => {
+      console.log("axios.get the one task. does it include the userId?")
+      console.log(res.data)
       setTask ( {...res.data} );
     })
     .catch(err => console.error(err));
@@ -95,7 +94,6 @@ function EditTask(props) {
     }
   }
 
-
   const handleSubmit = (e) => {                                     // Handle form submission here
     e.preventDefault();
     patchTask(task,false,"Successfully patched updated task in EditTask.jsx")
@@ -104,7 +102,6 @@ function EditTask(props) {
 
   return (
     <>
-      {/* <NavBar/> */}
       <div className="container">
         <div className="card mt-3">
           <div className="card-body">

@@ -10,25 +10,31 @@ import NavBar from "../components/NavBar";
 import { toDateObject, toISODateString } from "../utils/formatDate";
 import patchTask from "../utils/patchTask";
 import RenderDateContext from "../context/RenderDateContext";
+import {useNavigate} from "react-router-dom";
 
 function DailyTasks(props) {
+  // TODO: this is a hack to redirect upon logout, correct technique might be AuthProvider context wrapper
+  const navigate = useNavigate();
+  const userName = sessionStorage.getItem('userName')
+  if(userName == null){
+    navigate("/");
+  }
+
   /* Initialize state & context */
   const {taskList, setTaskList} = useContext(TaskListContext);
   const {renderDate, setRenderDate} = useContext(RenderDateContext);
   const [currTime, setCurrTime] = useState();
-  // const [renderDate, setRenderDate] = useState(new Date()); // 'renderDate' is a Date object
   const [isPaused, setIsPaused] = useState(false);
-  const userId = sessionStorage.getItem('userId');
   
   /* Load Main Content any time date (renderDate) is changed */
   useEffect(() => {
     setIsPaused(false);                                     // Unpause whenever we change date
     axios
-      .get(`http://localhost:8000/api/tasks/users/${userId}`, { withCredentials : true })
+      .get(`http://localhost:8000/api/tasks`, { withCredentials : true })
       .then((res) => {
         // TODO: make sure that filter will work in all time zones
-        const userId = sessionStorage.getItem('userId')
-        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate) && element.userId == userId);  // Filter res.data (all tasks) down to only tasks with taskDate == renderDate
+        // const userId = sessionStorage.getItem('userId')
+        let tasksForDay = res.data.filter((element) => element.taskDate == toISODateString(renderDate)) // && element.userId == userId);  // Filter res.data (all tasks) down to only tasks with taskDate == renderDate
         setTaskList(SortTasks(tasksForDay));
       })
       .catch((err) => console.log(err));
@@ -91,7 +97,8 @@ function DailyTasks(props) {
     <>
       <NavBar currTime={currTime} setCurrTime={setCurrTime} />
       <div className="container">
-        {taskList.map((task, index) => {
+        { taskList.length > 0 ? 
+        taskList.map((task, index) => {
           return (
             <div key={index}>
               <Task
@@ -103,7 +110,9 @@ function DailyTasks(props) {
               />
             </div>
           );
-        })}
+        }) : 
+        <h3>All tasks complete for today!</h3>
+      }
       </div>
     </>
   );

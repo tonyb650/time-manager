@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TaskListContext from "../../context/TaskListContext";
 import SortTasks from "../../utils/SortTasks";
-import axios from "axios";
 import patchTask from "../../utils/patchTask";
 
 function TaskDuration(props) {

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 
 import pushpin from "../assets/img/pin-angle-fill.svg";
 import editpencil from "../assets/img/pencil-fill.svg";
-import calendar from "../assets/img/calendar4-event.svg"
 import { toDateObject } from "../utils/formatDate";
 import addMinutes from "../utils/addMinutes";
 
@@ -14,6 +13,7 @@ import MoveToTop from "./taskButtons/MoveToTop";
 import MoveUp from "./taskButtons/MoveUp";
 import MoveDown from "./taskButtons/MoveDown";
 import MoveToBottom from "./taskButtons/MoveToBottom";
+
 import StartTime from "./taskFields/StartTime";
 import EndTime from "./taskFields/EndTime";
 
@@ -67,7 +67,7 @@ function Task(props) {
             </div>
             
             <div className="form-text">{task.taskBody}</div>
-            <div className="form-text text-black-50">Idx:{index} | TotalDuration:{task.actualTotalDuration}</div>
+            {/* <div className="form-text text-black-50">Idx:{index} | TotalDuration:{task.actualTotalDuration}</div> */}
           </div>
           <div className="col-12 col-xs-12 col-sm-3 col-lg-2">
             <div className="container">

@@ -10,16 +10,13 @@ function Login() {
 
   const loginHandler = (e) =>  {
       e.preventDefault();
+      // TODO: first thing upon attempt to login would be to 'logout' if there is a cookie and sessionStorage
       axios.post("http://localhost:8000/api/login", { email, password}, { withCredentials : true }) 
       .then((res) => {
-        sessionStorage.setItem('userId', res.data.user._id)
+        sessionStorage.setItem('userName', res.data.user.firstName)
         navigate('/tasks');
       } )
       .catch(err => {
-        // console.log(err)
-        // console.log(err.response)
-        // console.log(err.response.data)
-        // console.log(err.response.data.message)
         setErrors(err.response.data.message)
       })
   }

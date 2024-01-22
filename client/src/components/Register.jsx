@@ -17,27 +17,22 @@ function Register(props) {
         setUser({...user, [e.target.name]:e.target.value})
     }
 
-    const submitHandler = (e) => {
+    const registerHandler = (e) => {
         e.preventDefault();
+        // TODO: first thing upon attempt to register would be to 'logout' if there is a cookie and sessionStorage
         axios.post("http://localhost:8000/api/register", user, {withCredentials:true})
         .then((res) => {
-          sessionStorage.setItem('userId', res.data.user._id) // TODO CODE REVIEW -> best way to handle accessing userId on client side ? localStorage? sessionStorage?
+          sessionStorage.setItem('userName', res.data.user.firstName)
           navigate("/tasks");
         })
         .catch(err => {
-          // console.log(err);
-          // console.log(err.response);
-          // console.log(err.response.data);
-          // console.log(err.response.data.message); // undefined
-          // console.log("err.response.data.errors:")
-          // console.log(err.response.data.errors); // undefined
           setErrors(err.response.data.errors)
         })
     }
 
   return (
     <div>
-      <form onSubmit={submitHandler}>
+      <form onSubmit={registerHandler}>
         <div className='form-group my-2'>
           <input type="text" className="form-control" name="firstName" placeholder='First Name *' value={user.firstName} onChange={changeHandler}/>
           { errors.firstName && ( <p className='text-danger form-text'>{errors.firstName.message}</p> )}
