@@ -2,7 +2,6 @@ const Task = require("../models/task.model");
 
 module.exports = {
   createTask : (req,res) => {
-
         Task.create(req.body)
         .then(newTask=> res.json(newTask))
         .catch(err => res.status(400).json(err))
@@ -31,5 +30,5 @@ module.exports = {
         Task.findOneAndDelete ({_id : req.params.id} )
         .then(result => res.json(result))
         .catch(err => console.log(err))
-    },
-    }
+  }
+}

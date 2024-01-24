@@ -14,7 +14,7 @@ const taskSchema = new mongoose.Schema({
     durationOfBreak: {type: Number,
         required: [true, "Break duration is required"]
     },
-    actualTotalDuration: {type: Number,
+    actualTotalDuration: {type: Number
     }, 
     startTime: {type: String,
       required: [true, "Start time is required"]
