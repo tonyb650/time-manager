@@ -100,7 +100,7 @@ function DailyTasks(props) {
         { taskList.length > 0 ? 
         taskList.map((task, index) => {
           return (
-            <div key={index}>
+            <div key={index}> // TODO key should be task._id and we don't need the extra div here
               <Task
                 task={task}
                 index={index}
