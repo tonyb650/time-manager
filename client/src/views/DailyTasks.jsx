@@ -13,7 +13,7 @@ import RenderDateContext from "../context/RenderDateContext";
 import {useNavigate} from "react-router-dom";
 
 function DailyTasks(props) {
-  // TODO: this is a hack to redirect upon logout, correct technique might be AuthProvider context wrapper
+  // TODO: this is a suboptimal way to redirect upon logout, correct technique might be AuthProvider context wrapper
   const navigate = useNavigate();
   const userName = sessionStorage.getItem('userName')
   if(userName == null){
@@ -100,7 +100,8 @@ function DailyTasks(props) {
         { taskList.length > 0 ? 
         taskList.map((task, index) => {
           return (
-            <div key={index}> // TODO key should be task._id and we don't need the extra div here
+            <div key={index}> 
+            {/* // TODO key should be task._id and we don't need the extra div here */}
               <Task
                 task={task}
                 index={index}

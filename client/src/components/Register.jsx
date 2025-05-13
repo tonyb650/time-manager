@@ -46,11 +46,11 @@ function Register(props) {
           { errors.email && ( <p className='text-danger form-text'>{errors.email.message}</p> )}
         </div>
         <div className='form-group my-2'>
-            <input type="text" className="form-control" name="password" placeholder='Password *' value={user.password} onChange={changeHandler}/>
+            <input type="password" className="form-control" name="password" placeholder='Password *' value={user.password} onChange={changeHandler}/>
           { errors.password && ( <p className='text-danger form-text'>{errors.password.message}</p> )}
         </div>
         <div className='form-group my-2'>
-            <input type="text" className="form-control" name="confirmPassword" placeholder='Confirm Password *' value={user.confirmPassword} onChange={changeHandler}/>
+            <input type="password" className="form-control" name="confirmPassword" placeholder='Confirm Password *' value={user.confirmPassword} onChange={changeHandler}/>
           { errors.confirmPassword && ( <p className='text-danger form-text'>{errors.confirmPassword.message}</p> )}
         </div>
         <button className="btnSubmit">Register</button>

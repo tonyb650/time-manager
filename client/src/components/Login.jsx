@@ -28,7 +28,7 @@ function Login() {
           <input type="text" className="form-control" name="email" placeholder='Email *' value={email} onChange={(e) => setEmail(e.target.value)}/>
         </div>
         <div className='form-group my-2'>
-          <input type="text" className="form-control" name="password" placeholder='Password *' value={password} onChange={(e) => setPassword(e.target.value)}/>
+          <input type="password" className="form-control" name="password" placeholder='Password *' value={password} onChange={(e) => setPassword(e.target.value)}/>
         </div>
         <div className='form-group my-2'>
           { errors && ( <p className='text-danger form-text'>{errors}</p> )}
